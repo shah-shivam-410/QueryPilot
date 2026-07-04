@@ -1,0 +1,357 @@
+[
+  {
+    "table": "purchaseorderdetail",
+    "full_name": "purchasing.purchaseorderdetail",
+    "description": "Individual products associated with a specific purchase order. See PurchaseOrderHeader.",
+    "columns": [
+      {
+        "name": "purchaseorderid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to PurchaseOrderHeader.PurchaseOrderID."
+      },
+      {
+        "name": "purchaseorderdetailid",
+        "type": "integer",
+        "description": "Primary key. One line number per purchased product."
+      },
+      {
+        "name": "duedate",
+        "type": "timestamp",
+        "description": "Date the product is expected to be received."
+      },
+      {
+        "name": "orderqty",
+        "type": "smallint",
+        "description": "Quantity ordered."
+      },
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product identification number. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "unitprice",
+        "type": "numeric",
+        "description": ""
+      },
+      {
+        "name": "receivedqty",
+        "type": "numeric(8,2)",
+        "description": "Quantity actually received from the vendor."
+      },
+      {
+        "name": "rejectedqty",
+        "type": "numeric(8,2)",
+        "description": "Quantity rejected during inspection."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_PurchaseOrderDetail_OrderQty\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_PurchaseOrderDetail_ReceivedQty\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_PurchaseOrderDetail_RejectedQty\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_PurchaseOrderDetail_UnitPrice\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "purchaseorderheader",
+    "full_name": "purchasing.purchaseorderheader",
+    "description": "General purchase order information. See PurchaseOrderDetail.",
+    "columns": [
+      {
+        "name": "purchaseorderid",
+        "type": "integer",
+        "description": "Primary key."
+      },
+      {
+        "name": "revisionnumber",
+        "type": "smallint",
+        "description": "Incremental number to track changes to the purchase order over time."
+      },
+      {
+        "name": "status",
+        "type": "smallint",
+        "description": "Order current status. 1 = Pending; 2 = Approved; 3 = Rejected; 4 = Complete"
+      },
+      {
+        "name": "employeeid",
+        "type": "integer",
+        "description": "Employee who created the purchase order. Foreign key to Employee.BusinessEntityID."
+      },
+      {
+        "name": "vendorid",
+        "type": "integer",
+        "description": "Vendor with whom the purchase order is placed. Foreign key to Vendor.BusinessEntityID."
+      },
+      {
+        "name": "shipmethodid",
+        "type": "integer",
+        "description": "Shipping method. Foreign key to ShipMethod.ShipMethodID."
+      },
+      {
+        "name": "orderdate",
+        "type": "timestamp",
+        "description": "Purchase order creation date."
+      },
+      {
+        "name": "shipdate",
+        "type": "timestamp",
+        "description": "Estimated shipment date from the vendor."
+      },
+      {
+        "name": "subtotal",
+        "type": "numeric",
+        "description": "Purchase order subtotal. Computed as SUM(PurchaseOrderDetail.LineTotal)for the appropriate PurchaseOrderID."
+      },
+      {
+        "name": "taxamt",
+        "type": "numeric",
+        "description": "Tax amount."
+      },
+      {
+        "name": "freight",
+        "type": "numeric",
+        "description": "Shipping cost."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_PurchaseOrderHeader_Freight\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_PurchaseOrderHeader_ShipDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_PurchaseOrderHeader_Status\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_PurchaseOrderHeader_SubTotal\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_PurchaseOrderHeader_TaxAmt\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productvendor",
+    "full_name": "purchasing.productvendor",
+    "description": "Cross-reference table mapping vendors with the products they supply.",
+    "columns": [
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to Vendor.BusinessEntityID."
+      },
+      {
+        "name": "averageleadtime",
+        "type": "integer",
+        "description": "The average span of time (in days) between placing an order with the vendor and receiving the purchased product."
+      },
+      {
+        "name": "standardprice",
+        "type": "numeric",
+        "description": ""
+      },
+      {
+        "name": "lastreceiptcost",
+        "type": "numeric",
+        "description": "The selling price when last purchased."
+      },
+      {
+        "name": "lastreceiptdate",
+        "type": "timestamp",
+        "description": "Date the product was last received by the vendor."
+      },
+      {
+        "name": "minorderqty",
+        "type": "integer",
+        "description": "The maximum quantity that should be ordered."
+      },
+      {
+        "name": "maxorderqty",
+        "type": "integer",
+        "description": "The minimum quantity that should be ordered."
+      },
+      {
+        "name": "onorderqty",
+        "type": "integer",
+        "description": "The quantity currently on order."
+      },
+      {
+        "name": "unitmeasurecode",
+        "type": "character(3)",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductVendor_AverageLeadTime\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductVendor_LastReceiptCost\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductVendor_MaxOrderQty\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductVendor_MinOrderQty\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductVendor_OnOrderQty\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductVendor_StandardPrice\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "shipmethod",
+    "full_name": "purchasing.shipmethod",
+    "description": "Shipping company lookup table.",
+    "columns": [
+      {
+        "name": "shipmethodid",
+        "type": "integer",
+        "description": "Primary key for ShipMethod records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Shipping company name."
+      },
+      {
+        "name": "shipbase",
+        "type": "numeric",
+        "description": "Minimum shipping charge."
+      },
+      {
+        "name": "shiprate",
+        "type": "numeric",
+        "description": "Shipping charge per pound."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ShipMethod_ShipBase\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ShipMethod_ShipRate\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "vendor",
+    "full_name": "purchasing.vendor",
+    "description": "Companies from whom Adventure Works Cycles purchases parts or other goods.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Primary key for Vendor records.  Foreign key to BusinessEntity.BusinessEntityID"
+      },
+      {
+        "name": "accountnumber",
+        "type": "public.\"AccountNumber\"",
+        "description": "Vendor account (identification) number."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Company name."
+      },
+      {
+        "name": "creditrating",
+        "type": "smallint",
+        "description": "1 = Superior, 2 = Excellent, 3 = Above average, 4 = Average, 5 = Below average"
+      },
+      {
+        "name": "preferredvendorstatus",
+        "type": "public.\"Flag\"",
+        "description": "0 = Do not use if another vendor is available. 1 = Preferred over other vendors supplying the same product."
+      },
+      {
+        "name": "activeflag",
+        "type": "public.\"Flag\"",
+        "description": "0 = Vendor no longer used. 1 = Vendor is actively used."
+      },
+      {
+        "name": "purchasingwebserviceurl",
+        "type": "character",
+        "description": "Vendor URL."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Vendor_CreditRating\"",
+        "description": ""
+      }
+    ]
+  }
+]

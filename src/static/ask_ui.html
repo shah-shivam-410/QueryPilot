@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SQL Pilot Agent</title>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      max-width: 850px;
+      margin: 32px auto;
+      padding: 0 16px;
+      line-height: 1.5;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+    button {
+      width: fit-content;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .card {
+      background: #f8f8f8;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+    .section-title {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #444;
+    }
+    table {
+      width: max-content;
+      min-width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    #result-section {
+      overflow-x: auto;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #eee;
+    }
+    .muted {
+      color: #666;
+    }
+    .sql-block {
+      background: #1e1e1e;
+      color: #f8f8f2;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .sql-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .copy-sql-btn {
+      width: auto;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      font-size: 16px;
+      line-height: 1;
+    }
+    .status-spinner {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #444;
+    }
+    .status-spinner::before {
+      content: '';
+      width: 12px;
+      height: 12px;
+      border: 2px solid #ccc;
+      border-top-color: #333;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h2>SQL Pilot Agent</h2>
+  <p>Ask your question in plain English and get a SQL response.</p>
+
+  <form id="ask-form">
+    <label for="requirement">Requirement</label>
+    <textarea id="requirement" placeholder="Example: Show the top 10 products by total sales in the sales schema"></textarea>
+
+    <label>
+      <input type="checkbox" id="execute" checked /> Execute query
+    </label>
+
+    <div class="button-row">
+      <button type="submit">Get SQL</button>
+      <button type="button" id="reset-btn">Reset</button>
+    </div>
+  </form>
+
+  <p id="status">Ready</p>
+  <div id="sql-area" class="card" style="display:none;">
+    <div id="query-section"></div>
+  </div>
+  <div id="notes-area" class="card" style="display:none;">
+    <div id="explanation-section"></div>
+    <div id="assumptions-section"></div>
+  </div>
+  <div id="result-area" class="card" style="display:none;">
+    <div id="result-section"></div>
+  </div>
+
+  <script>
+    function formatSql(sql) {
+      return $('<div>').text(sql).html();
+    }
+
+    function copySqlToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        return navigator.clipboard.writeText(text);
+      }
+
+      const temp = document.createElement('textarea');
+      temp.value = text;
+      temp.setAttribute('readonly', '');
+      temp.style.position = 'fixed';
+      temp.style.left = '-9999px';
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      return Promise.resolve();
+    }
+
+    function renderResponse(data) {
+      const sqlArea = $('#sql-area');
+      const resultArea = $('#result-area');
+      const notesArea = $('#notes-area');
+      const querySection = $('#query-section');
+      const explanationSection = $('#explanation-section');
+      const assumptionsSection = $('#assumptions-section');
+      const resultSection = $('#result-section');
+
+      querySection.html('');
+      explanationSection.html('');
+      assumptionsSection.html('');
+      resultSection.html('');
+      sqlArea.hide();
+      resultArea.hide();
+      notesArea.hide();
+
+      if (data.query) {
+        const formattedSql = formatSql(data.query);
+        const sqlHeader = $('<div class="sql-header"></div>');
+        sqlHeader.append($('<h3 class="section-title">SQL</h3>'));
+        sqlHeader.append(
+          $('<button type="button" class="copy-sql-btn" title="Copy SQL" aria-label="Copy SQL">📋</button>').data('sql', data.query)
+        );
+
+        querySection.append(sqlHeader);
+        querySection.append($('<div class="sql-block"></div>').html(formattedSql));
+        sqlArea.show();
+      }
+
+      if (data.result) {
+        if (data.result.columns && data.result.rows) {
+          const columns = data.result.columns;
+          const rows = data.result.rows;
+          let tableHtml = '<h3 class="section-title">Result</h3>';
+          tableHtml += '<p class="muted">Rows: ' + data.result.row_count + '</p>';
+          tableHtml += '<table><thead><tr>';
+          columns.forEach(function (col) {
+            tableHtml += '<th>' + $('<div>').text(col).html() + '</th>';
+          });
+          tableHtml += '</tr></thead><tbody>';
+
+          rows.forEach(function (row) {
+            tableHtml += '<tr>';
+            columns.forEach(function (col) {
+              const value = row[col] === null || row[col] === undefined ? '' : row[col];
+              tableHtml += '<td>' + $('<div>').text(String(value)).html() + '</td>';
+            });
+            tableHtml += '</tr>';
+          });
+          tableHtml += '</tbody></table>';
+          resultSection.html(tableHtml);
+        } else {
+          resultSection.html('<h3 class="section-title">Result</h3><pre>' + $('<div>').text(JSON.stringify(data.result, null, 2)).html() + '</pre>');
+        }
+        resultArea.show();
+      }
+
+      if (data.explanation) {
+        explanationSection.html('<h3 class="section-title">Explanation</h3><p>' + $('<div>').text(data.explanation).html().replace(/\n/g, '<br>') + '</p>');
+      }
+
+      if (data.assumptions && data.assumptions.length) {
+        const assumptionsHtml = '<ul>' + data.assumptions.map(function (item) {
+          return '<li>' + $('<div>').text(item).html() + '</li>';
+        }).join('') + '</ul>';
+        assumptionsSection.html('<h3 class="section-title">Assumptions</h3>' + assumptionsHtml);
+      }
+
+      if (data.explanation || (data.assumptions && data.assumptions.length)) {
+        notesArea.show();
+      }
+    }
+
+    $(function () {
+      $(document).on('click', '.copy-sql-btn', function () {
+        const button = $(this);
+        const sql = button.data('sql');
+
+        copySqlToClipboard(sql).then(function () {
+          const originalText = button.text();
+          button.text('✓');
+          setTimeout(function () {
+            button.text(originalText);
+          }, 1200);
+        }).catch(function () {
+          button.text('✕');
+          setTimeout(function () {
+            button.text('📋');
+          }, 1200);
+        });
+      });
+
+      $('#reset-btn').on('click', function () {
+        $('#requirement').val('');
+        $('#execute').prop('checked', true);
+        $('#status').text('Ready');
+        $('#sql-area, #result-area, #notes-area').hide();
+      });
+
+      $('#ask-form').on('submit', function (e) {
+        e.preventDefault();
+
+        const requirement = $('#requirement').val().trim();
+        if (!requirement) {
+          $('#status').text('Please enter a requirement.');
+          return;
+        }
+
+        $('#status').html('<span class="status-spinner">Processing</span>');
+        $('#sql-area, #result-area, #notes-area').hide();
+
+        $.ajax({
+          url: '/ask',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify({
+            requirement: requirement,
+            execute: $('#execute').is(':checked')
+          }),
+          success: function (data) {
+            $('#status').text('Done');
+            renderResponse(data);
+          },
+          error: function (xhr) {
+            const msg = xhr.responseJSON?.detail || xhr.responseText || 'Request failed';
+            $('#status').text('Error');
+            $('#response-area').html('<div class="card"><h3 class="section-title">Error</h3><p>' + $('<div>').text(msg).html() + '</p></div>').show();
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

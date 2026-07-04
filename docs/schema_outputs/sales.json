@@ -1,0 +1,935 @@
+[
+  {
+    "table": "customer",
+    "full_name": "sales.customer",
+    "description": "Current customer information. Also see the Person and Store tables.",
+    "columns": [
+      {
+        "name": "customerid",
+        "type": "integer",
+        "description": "Primary key."
+      },
+      {
+        "name": "personid",
+        "type": "integer",
+        "description": "Foreign key to Person.BusinessEntityID"
+      },
+      {
+        "name": "storeid",
+        "type": "integer",
+        "description": "Foreign key to Store.BusinessEntityID"
+      },
+      {
+        "name": "territoryid",
+        "type": "integer",
+        "description": "ID of the territory in which the customer is located. Foreign key to SalesTerritory.SalesTerritoryID."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "creditcard",
+    "full_name": "sales.creditcard",
+    "description": "Customer credit card information.",
+    "columns": [
+      {
+        "name": "creditcardid",
+        "type": "integer",
+        "description": "Primary key for CreditCard records."
+      },
+      {
+        "name": "cardtype",
+        "type": "character",
+        "description": "Credit card name."
+      },
+      {
+        "name": "cardnumber",
+        "type": "character",
+        "description": "Credit card number."
+      },
+      {
+        "name": "expmonth",
+        "type": "smallint",
+        "description": "Credit card expiration month."
+      },
+      {
+        "name": "expyear",
+        "type": "smallint",
+        "description": "Credit card expiration year."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "currencyrate",
+    "full_name": "sales.currencyrate",
+    "description": "Currency exchange rates.",
+    "columns": [
+      {
+        "name": "currencyrateid",
+        "type": "integer",
+        "description": "Primary key for CurrencyRate records."
+      },
+      {
+        "name": "currencyratedate",
+        "type": "timestamp",
+        "description": "Date and time the exchange rate was obtained."
+      },
+      {
+        "name": "fromcurrencycode",
+        "type": "character(3)",
+        "description": "Exchange rate was converted from this currency code."
+      },
+      {
+        "name": "tocurrencycode",
+        "type": "character(3)",
+        "description": "Exchange rate was converted to this currency code."
+      },
+      {
+        "name": "averagerate",
+        "type": "numeric",
+        "description": "Average exchange rate for the day."
+      },
+      {
+        "name": "endofdayrate",
+        "type": "numeric",
+        "description": "Final exchange rate for the day."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "countryregioncurrency",
+    "full_name": "sales.countryregioncurrency",
+    "description": "Cross-reference table mapping ISO currency codes to a country or region.",
+    "columns": [
+      {
+        "name": "countryregioncode",
+        "type": "character",
+        "description": "ISO code for countries and regions. Foreign key to CountryRegion.CountryRegionCode."
+      },
+      {
+        "name": "currencycode",
+        "type": "character(3)",
+        "description": "ISO standard currency code. Foreign key to Currency.CurrencyCode."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "currency",
+    "full_name": "sales.currency",
+    "description": "Lookup table containing standard ISO currencies.",
+    "columns": [
+      {
+        "name": "currencycode",
+        "type": "character(3)",
+        "description": "The ISO code for the Currency."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Currency name."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "personcreditcard",
+    "full_name": "sales.personcreditcard",
+    "description": "Cross-reference table mapping people to their credit card information in the CreditCard table.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Business entity identification number. Foreign key to Person.BusinessEntityID."
+      },
+      {
+        "name": "creditcardid",
+        "type": "integer",
+        "description": "Credit card identification number. Foreign key to CreditCard.CreditCardID."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "store",
+    "full_name": "sales.store",
+    "description": "Customers (resellers) of Adventure Works products.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to Customer.BusinessEntityID."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Name of the store."
+      },
+      {
+        "name": "salespersonid",
+        "type": "integer",
+        "description": "ID of the sales person assigned to the customer. Foreign key to SalesPerson.BusinessEntityID."
+      },
+      {
+        "name": "demographics",
+        "type": "xml",
+        "description": "Demographic informationg about the store such as the number of employees, annual sales and store type."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "shoppingcartitem",
+    "full_name": "sales.shoppingcartitem",
+    "description": "Contains online customer orders until the order is submitted or cancelled.",
+    "columns": [
+      {
+        "name": "shoppingcartitemid",
+        "type": "integer",
+        "description": "Primary key for ShoppingCartItem records."
+      },
+      {
+        "name": "shoppingcartid",
+        "type": "character",
+        "description": "Shopping cart identification number."
+      },
+      {
+        "name": "quantity",
+        "type": "integer",
+        "description": "Product quantity ordered."
+      },
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product ordered. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "datecreated",
+        "type": "timestamp",
+        "description": "Date the time the record was created."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ShoppingCartItem_Quantity\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "specialoffer",
+    "full_name": "sales.specialoffer",
+    "description": "Sale discounts lookup table.",
+    "columns": [
+      {
+        "name": "specialofferid",
+        "type": "integer",
+        "description": "Primary key for SpecialOffer records."
+      },
+      {
+        "name": "description",
+        "type": "character",
+        "description": "Discount description."
+      },
+      {
+        "name": "discountpct",
+        "type": "numeric",
+        "description": "Discount precentage."
+      },
+      {
+        "name": "type",
+        "type": "character",
+        "description": "Discount type category."
+      },
+      {
+        "name": "category",
+        "type": "character",
+        "description": "Group the discount applies to such as Reseller or Customer."
+      },
+      {
+        "name": "startdate",
+        "type": "timestamp",
+        "description": "Discount start date."
+      },
+      {
+        "name": "enddate",
+        "type": "timestamp",
+        "description": "Discount end date."
+      },
+      {
+        "name": "minqty",
+        "type": "integer",
+        "description": "Minimum discount percent allowed."
+      },
+      {
+        "name": "maxqty",
+        "type": "integer",
+        "description": "Maximum discount percent allowed."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SpecialOffer_DiscountPct\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SpecialOffer_EndDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SpecialOffer_MaxQty\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SpecialOffer_MinQty\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "salesorderdetail",
+    "full_name": "sales.salesorderdetail",
+    "description": "Individual products associated with a specific sales order. See SalesOrderHeader.",
+    "columns": [
+      {
+        "name": "salesorderid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to SalesOrderHeader.SalesOrderID."
+      },
+      {
+        "name": "salesorderdetailid",
+        "type": "integer",
+        "description": "Primary key. One incremental unique number per product sold."
+      },
+      {
+        "name": "carriertrackingnumber",
+        "type": "character",
+        "description": "Shipment tracking number supplied by the shipper."
+      },
+      {
+        "name": "orderqty",
+        "type": "smallint",
+        "description": "Quantity ordered per product."
+      },
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product sold to customer. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "specialofferid",
+        "type": "integer",
+        "description": "Promotional code. Foreign key to SpecialOffer.SpecialOfferID."
+      },
+      {
+        "name": "unitprice",
+        "type": "numeric",
+        "description": "Selling price of a single product."
+      },
+      {
+        "name": "unitpricediscount",
+        "type": "numeric",
+        "description": "Discount amount."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesOrderDetail_OrderQty\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesOrderDetail_UnitPrice\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesOrderDetail_UnitPriceDiscount\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "salesorderheader",
+    "full_name": "sales.salesorderheader",
+    "description": "General sales order information.",
+    "columns": [
+      {
+        "name": "salesorderid",
+        "type": "integer",
+        "description": "Primary key."
+      },
+      {
+        "name": "revisionnumber",
+        "type": "smallint",
+        "description": "Incremental number to track changes to the sales order over time."
+      },
+      {
+        "name": "orderdate",
+        "type": "timestamp",
+        "description": "Dates the sales order was created."
+      },
+      {
+        "name": "duedate",
+        "type": "timestamp",
+        "description": "Date the order is due to the customer."
+      },
+      {
+        "name": "shipdate",
+        "type": "timestamp",
+        "description": "Date the order was shipped to the customer."
+      },
+      {
+        "name": "status",
+        "type": "smallint",
+        "description": "Order current status. 1 = In process; 2 = Approved; 3 = Backordered; 4 = Rejected; 5 = Shipped; 6 = Cancelled"
+      },
+      {
+        "name": "onlineorderflag",
+        "type": "public.\"Flag\"",
+        "description": "0 = Order placed by sales person. 1 = Order placed online by customer."
+      },
+      {
+        "name": "purchaseordernumber",
+        "type": "public.\"OrderNumber\"",
+        "description": "Customer purchase order number reference."
+      },
+      {
+        "name": "accountnumber",
+        "type": "public.\"AccountNumber\"",
+        "description": "Financial accounting number reference."
+      },
+      {
+        "name": "customerid",
+        "type": "integer",
+        "description": "Customer identification number. Foreign key to Customer.BusinessEntityID."
+      },
+      {
+        "name": "salespersonid",
+        "type": "integer",
+        "description": "Sales person who created the sales order. Foreign key to SalesPerson.BusinessEntityID."
+      },
+      {
+        "name": "territoryid",
+        "type": "integer",
+        "description": "Territory in which the sale was made. Foreign key to SalesTerritory.SalesTerritoryID."
+      },
+      {
+        "name": "billtoaddressid",
+        "type": "integer",
+        "description": "Customer billing address. Foreign key to Address.AddressID."
+      },
+      {
+        "name": "shiptoaddressid",
+        "type": "integer",
+        "description": "Customer shipping address. Foreign key to Address.AddressID."
+      },
+      {
+        "name": "shipmethodid",
+        "type": "integer",
+        "description": "Shipping method. Foreign key to ShipMethod.ShipMethodID."
+      },
+      {
+        "name": "creditcardid",
+        "type": "integer",
+        "description": "Credit card identification number. Foreign key to CreditCard.CreditCardID."
+      },
+      {
+        "name": "creditcardapprovalcode",
+        "type": "character",
+        "description": "Approval code provided by the credit card company."
+      },
+      {
+        "name": "currencyrateid",
+        "type": "integer",
+        "description": "Currency exchange rate used. Foreign key to CurrencyRate.CurrencyRateID."
+      },
+      {
+        "name": "subtotal",
+        "type": "numeric",
+        "description": "Sales subtotal. Computed as SUM(SalesOrderDetail.LineTotal)for the appropriate SalesOrderID."
+      },
+      {
+        "name": "taxamt",
+        "type": "numeric",
+        "description": "Tax amount."
+      },
+      {
+        "name": "freight",
+        "type": "numeric",
+        "description": "Shipping cost."
+      },
+      {
+        "name": "totaldue",
+        "type": "numeric",
+        "description": "Total due from customer. Computed as Subtotal + TaxAmt + Freight."
+      },
+      {
+        "name": "comment",
+        "type": "character",
+        "description": "Sales representative comments."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesOrderHeader_DueDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesOrderHeader_Freight\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesOrderHeader_ShipDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesOrderHeader_Status\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesOrderHeader_SubTotal\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesOrderHeader_TaxAmt\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "salesorderheadersalesreason",
+    "full_name": "sales.salesorderheadersalesreason",
+    "description": "Cross-reference table mapping sales orders to sales reason codes.",
+    "columns": [
+      {
+        "name": "salesorderid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to SalesOrderHeader.SalesOrderID."
+      },
+      {
+        "name": "salesreasonid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to SalesReason.SalesReasonID."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "specialofferproduct",
+    "full_name": "sales.specialofferproduct",
+    "description": "Cross-reference table mapping products to special offer discounts.",
+    "columns": [
+      {
+        "name": "specialofferid",
+        "type": "integer",
+        "description": "Primary key for SpecialOfferProduct records."
+      },
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product identification number. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "salesperson",
+    "full_name": "sales.salesperson",
+    "description": "Sales representative current information.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Primary key for SalesPerson records. Foreign key to Employee.BusinessEntityID"
+      },
+      {
+        "name": "territoryid",
+        "type": "integer",
+        "description": "Territory currently assigned to. Foreign key to SalesTerritory.SalesTerritoryID."
+      },
+      {
+        "name": "salesquota",
+        "type": "numeric",
+        "description": "Projected yearly sales."
+      },
+      {
+        "name": "bonus",
+        "type": "numeric",
+        "description": "Bonus due if quota is met."
+      },
+      {
+        "name": "commissionpct",
+        "type": "numeric",
+        "description": "Commision percent received per sale."
+      },
+      {
+        "name": "salesytd",
+        "type": "numeric",
+        "description": "Sales total year to date."
+      },
+      {
+        "name": "saleslastyear",
+        "type": "numeric",
+        "description": "Sales total of previous year."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesPerson_Bonus\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesPerson_CommissionPct\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesPerson_SalesLastYear\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesPerson_SalesQuota\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesPerson_SalesYTD\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "salespersonquotahistory",
+    "full_name": "sales.salespersonquotahistory",
+    "description": "Sales performance tracking.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Sales person identification number. Foreign key to SalesPerson.BusinessEntityID."
+      },
+      {
+        "name": "quotadate",
+        "type": "timestamp",
+        "description": "Sales quota date."
+      },
+      {
+        "name": "salesquota",
+        "type": "numeric",
+        "description": "Sales quota amount."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesPersonQuotaHistory_SalesQuota\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "salesreason",
+    "full_name": "sales.salesreason",
+    "description": "Lookup table of customer purchase reasons.",
+    "columns": [
+      {
+        "name": "salesreasonid",
+        "type": "integer",
+        "description": "Primary key for SalesReason records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Sales reason description."
+      },
+      {
+        "name": "reasontype",
+        "type": "public.\"Name\"",
+        "description": "Category the sales reason belongs to."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "salesterritory",
+    "full_name": "sales.salesterritory",
+    "description": "Sales territory lookup table.",
+    "columns": [
+      {
+        "name": "territoryid",
+        "type": "integer",
+        "description": "Primary key for SalesTerritory records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Sales territory description"
+      },
+      {
+        "name": "countryregioncode",
+        "type": "character",
+        "description": "ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode."
+      },
+      {
+        "name": "\"group\"",
+        "type": "character",
+        "description": "Geographic area to which the sales territory belong."
+      },
+      {
+        "name": "salesytd",
+        "type": "numeric",
+        "description": "Sales in the territory year to date."
+      },
+      {
+        "name": "saleslastyear",
+        "type": "numeric",
+        "description": "Sales in the territory the previous year."
+      },
+      {
+        "name": "costytd",
+        "type": "numeric",
+        "description": "Business costs in the territory year to date."
+      },
+      {
+        "name": "costlastyear",
+        "type": "numeric",
+        "description": "Business costs in the territory the previous year."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesTerritory_CostLastYear\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesTerritory_CostYTD\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesTerritory_SalesLastYear\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesTerritory_SalesYTD\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "salesterritoryhistory",
+    "full_name": "sales.salesterritoryhistory",
+    "description": "Sales representative transfers to other sales territories.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Primary key. The sales rep.  Foreign key to SalesPerson.BusinessEntityID."
+      },
+      {
+        "name": "territoryid",
+        "type": "integer",
+        "description": "Primary key. Territory identification number. Foreign key to SalesTerritory.SalesTerritoryID."
+      },
+      {
+        "name": "startdate",
+        "type": "timestamp",
+        "description": "Primary key. Date the sales representive started work in the territory."
+      },
+      {
+        "name": "enddate",
+        "type": "timestamp",
+        "description": "Date the sales representative left work in the territory."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesTerritoryHistory_EndDate\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "salestaxrate",
+    "full_name": "sales.salestaxrate",
+    "description": "Tax rate lookup table.",
+    "columns": [
+      {
+        "name": "salestaxrateid",
+        "type": "integer",
+        "description": "Primary key for SalesTaxRate records."
+      },
+      {
+        "name": "stateprovinceid",
+        "type": "integer",
+        "description": "State, province, or country/region the sales tax applies to."
+      },
+      {
+        "name": "taxtype",
+        "type": "smallint",
+        "description": "1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions."
+      },
+      {
+        "name": "taxrate",
+        "type": "numeric",
+        "description": "Tax rate amount."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Tax rate description."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_SalesTaxRate_TaxType\"",
+        "description": ""
+      }
+    ]
+  }
+]

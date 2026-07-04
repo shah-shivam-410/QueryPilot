@@ -1,0 +1,4 @@
+{
+    "requirement": "Get the total sales amount for each product category in the production schema.",
+    "execute": true
+}

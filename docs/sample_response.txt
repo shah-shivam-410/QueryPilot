@@ -1,0 +1,42 @@
+{
+    "requirement": "Get the total sales amount for each product category in the production schema.",
+    "query": "SELECT T3.name, SUM(T1.unitprice * T1.orderqty) AS total_sales_amount FROM sales.salesorderdetail AS T1 JOIN production.product AS T2 ON T1.productid = T2.productid JOIN production.productsubcategory AS T4 ON T2.productsubcategoryid = T4.productsubcategoryid JOIN production.productcategory AS T3 ON T4.productcategoryid = T3.productcategoryid GROUP BY T3.name ORDER BY total_sales_amount DESC LIMIT 100;",
+    "explanation": "This query calculates the total sales amount for each product category. It joins 'sales.salesorderdetail' with 'production.product' on 'productid', then with 'production.productsubcategory' on 'productsubcategoryid', and finally with 'production.productcategory' on 'productcategoryid'. The sales amount is calculated by multiplying 'unitprice' and 'orderqty' from 'sales.salesorderdetail', and then summed up for each product category. The results are grouped by category name and ordered by total sales amount in descending order, limited to 100 rows.",
+    "tables_used": [
+        "sales.salesorderdetail",
+        "production.product",
+        "production.productsubcategory",
+        "production.productcategory"
+    ],
+    "assumptions": [
+        "The 'unitprice' and 'orderqty' columns in 'sales.salesorderdetail' are used to calculate the sales amount for each item.",
+        "The 'productid' in 'sales.salesorderdetail' links to 'production.product'.",
+        "The 'productsubcategoryid' in 'production.product' links to 'production.productsubcategory'.",
+        "The 'productcategoryid' in 'production.productsubcategory' links to 'production.productcategory' to get the category name."
+    ],
+    "result": {
+        "columns": [
+            "name",
+            "total_sales_amount"
+        ],
+        "rows": [
+            {
+                "name": "Bikes",
+                "total_sales_amount": "95145813.3519"
+            },
+            {
+                "name": "Components",
+                "total_sales_amount": "11807808.0245"
+            },
+            {
+                "name": "Clothing",
+                "total_sales_amount": "2141507.0245"
+            },
+            {
+                "name": "Accessories",
+                "total_sales_amount": "1278760.9125"
+            }
+        ],
+        "row_count": 4
+    }
+}

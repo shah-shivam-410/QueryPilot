@@ -1,0 +1,453 @@
+[
+  {
+    "table": "address",
+    "full_name": "person.address",
+    "description": "Street address information for customers, employees, and vendors.",
+    "columns": [
+      {
+        "name": "addressid",
+        "type": "integer",
+        "description": "Primary key for Address records."
+      },
+      {
+        "name": "addressline1",
+        "type": "character",
+        "description": "First street address line."
+      },
+      {
+        "name": "addressline2",
+        "type": "character",
+        "description": "Second street address line."
+      },
+      {
+        "name": "city",
+        "type": "character",
+        "description": "Name of the city."
+      },
+      {
+        "name": "stateprovinceid",
+        "type": "integer",
+        "description": "Unique identification number for the state or province. Foreign key to StateProvince table."
+      },
+      {
+        "name": "postalcode",
+        "type": "character",
+        "description": "Postal code for the street address."
+      },
+      {
+        "name": "spatiallocation",
+        "type": "character",
+        "description": "Latitude and longitude of this address."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "businessentityaddress",
+    "full_name": "person.businessentityaddress",
+    "description": "Cross-reference table mapping customers, vendors, and employees to their addresses.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to BusinessEntity.BusinessEntityID."
+      },
+      {
+        "name": "addressid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to Address.AddressID."
+      },
+      {
+        "name": "addresstypeid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to AddressType.AddressTypeID."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "countryregion",
+    "full_name": "person.countryregion",
+    "description": "Lookup table containing the ISO standard codes for countries and regions.",
+    "columns": [
+      {
+        "name": "countryregioncode",
+        "type": "character",
+        "description": "ISO standard code for countries and regions."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Country or region name."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "emailaddress",
+    "full_name": "person.emailaddress",
+    "description": "Where to send a person email.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Primary key. Person associated with this email address.  Foreign key to Person.BusinessEntityID"
+      },
+      {
+        "name": "emailaddressid",
+        "type": "integer",
+        "description": "Primary key. ID of this email address."
+      },
+      {
+        "name": "emailaddress",
+        "type": "character",
+        "description": "E-mail address for the person."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "person",
+    "full_name": "person.person",
+    "description": "Human beings involved with AdventureWorks: employees, customer contacts, and vendor contacts.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Primary key for Person records."
+      },
+      {
+        "name": "persontype",
+        "type": "character(2)",
+        "description": "Primary type of person: SC = Store Contact, IN = Individual (retail) customer, SP = Sales person, EM = Employee (non-sales), VC = Vendor contact, GC = General contact"
+      },
+      {
+        "name": "namestyle",
+        "type": "public.\"NameStyle\"",
+        "description": "0 = The data in FirstName and LastName are stored in western style (first name, last name) order.  1 = Eastern style (last name, first name) order."
+      },
+      {
+        "name": "title",
+        "type": "character",
+        "description": "A courtesy title. For example, Mr. or Ms."
+      },
+      {
+        "name": "firstname",
+        "type": "public.\"Name\"",
+        "description": "First name of the person."
+      },
+      {
+        "name": "middlename",
+        "type": "public.\"Name\"",
+        "description": "Middle name or middle initial of the person."
+      },
+      {
+        "name": "lastname",
+        "type": "public.\"Name\"",
+        "description": "Last name of the person."
+      },
+      {
+        "name": "suffix",
+        "type": "character",
+        "description": "Surname suffix. For example, Sr. or Jr."
+      },
+      {
+        "name": "emailpromotion",
+        "type": "integer",
+        "description": "0 = Contact does not wish to receive e-mail promotions, 1 = Contact does wish to receive e-mail promotions from AdventureWorks, 2 = Contact does wish to receive e-mail promotions from AdventureWorks and selected partners."
+      },
+      {
+        "name": "additionalcontactinfo",
+        "type": "xml",
+        "description": "Additional contact information about the person stored in xml format."
+      },
+      {
+        "name": "demographics",
+        "type": "xml",
+        "description": "Personal information such as hobbies, and income collected from online shoppers. Used for sales analysis."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Person_EmailPromotion\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Person_PersonType\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "personphone",
+    "full_name": "person.personphone",
+    "description": "Telephone number and type of a person.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Business entity identification number. Foreign key to Person.BusinessEntityID."
+      },
+      {
+        "name": "phonenumber",
+        "type": "public.\"Phone\"",
+        "description": "Telephone number identification number."
+      },
+      {
+        "name": "phonenumbertypeid",
+        "type": "integer",
+        "description": "Kind of phone number. Foreign key to PhoneNumberType.PhoneNumberTypeID."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "phonenumbertype",
+    "full_name": "person.phonenumbertype",
+    "description": "Type of phone number of a person.",
+    "columns": [
+      {
+        "name": "phonenumbertypeid",
+        "type": "integer",
+        "description": "Primary key for telephone number type records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Name of the telephone number type"
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "stateprovince",
+    "full_name": "person.stateprovince",
+    "description": "State and province lookup table.",
+    "columns": [
+      {
+        "name": "stateprovinceid",
+        "type": "integer",
+        "description": "Primary key for StateProvince records."
+      },
+      {
+        "name": "stateprovincecode",
+        "type": "character(3)",
+        "description": "ISO standard state or province code."
+      },
+      {
+        "name": "countryregioncode",
+        "type": "character",
+        "description": "ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode."
+      },
+      {
+        "name": "isonlystateprovinceflag",
+        "type": "public.\"Flag\"",
+        "description": "0 = StateProvinceCode exists. 1 = StateProvinceCode unavailable, using CountryRegionCode."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "State or province description."
+      },
+      {
+        "name": "territoryid",
+        "type": "integer",
+        "description": "ID of the territory in which the state or province is located. Foreign key to SalesTerritory.SalesTerritoryID."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "addresstype",
+    "full_name": "person.addresstype",
+    "description": "Types of addresses stored in the Address table.",
+    "columns": [
+      {
+        "name": "addresstypeid",
+        "type": "integer",
+        "description": "Primary key for AddressType records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Address type description. For example, Billing, Home, or Shipping."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "businessentity",
+    "full_name": "person.businessentity",
+    "description": "Source of the ID that connects vendors, customers, and employees with address and contact information.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Primary key for all customers, vendors, and employees."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "businessentitycontact",
+    "full_name": "person.businessentitycontact",
+    "description": "Cross-reference table mapping stores, vendors, and employees to people",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to BusinessEntity.BusinessEntityID."
+      },
+      {
+        "name": "personid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to Person.BusinessEntityID."
+      },
+      {
+        "name": "contacttypeid",
+        "type": "integer",
+        "description": "Primary key.  Foreign key to ContactType.ContactTypeID."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "contacttype",
+    "full_name": "person.contacttype",
+    "description": "Lookup table containing the types of business entity contacts.",
+    "columns": [
+      {
+        "name": "contacttypeid",
+        "type": "integer",
+        "description": "Primary key for ContactType records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Contact type description."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "password",
+    "full_name": "person.password",
+    "description": "One way hashed authentication information",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": ""
+      },
+      {
+        "name": "passwordhash",
+        "type": "character",
+        "description": "Password for the e-mail account."
+      },
+      {
+        "name": "passwordsalt",
+        "type": "character",
+        "description": "Random value concatenated with the password string before the password is hashed."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  }
+]

@@ -1,0 +1,547 @@
+Table: production.billofmaterials
+Description: Items required to make bicycles and bicycle subassemblies. It identifies the heirarchical relationship between a parent product and its components.
+- billofmaterialsid: integer, not null - Primary key for BillOfMaterials records.
+- productassemblyid: integer, nullable - Parent product identification number. Foreign key to Product.ProductID.
+- componentid: integer, not null - Component identification number. Foreign key to Product.ProductID.
+- startdate: timestamp without time zone, not null - Date the component started being used in the assembly item.
+- enddate: timestamp without time zone, nullable - Date the component stopped being used in the assembly item.
+- unitmeasurecode: character(3), not null - Standard code identifying the unit of measure for the quantity.
+- bomlevel: smallint, not null - Indicates the depth the component is from its parent (AssemblyID).
+- perassemblyqty: numeric(8,2), not null - Quantity of the component needed to create the assembly.
+- modifieddate: timestamp without time zone, not null
+Primary key: billofmaterialsid
+Foreign keys:
+- (componentid) -> production.product(productid)
+- (productassemblyid) -> production.product(productid)
+- (unitmeasurecode) -> production.unitmeasure(unitmeasurecode)
+
+Table: production.culture
+Description: Lookup table containing the languages in which some AdventureWorks data is stored.
+- cultureid: character(6), not null - Primary key for Culture records.
+- name: public."Name", not null - Culture description.
+- modifieddate: timestamp without time zone, not null
+Primary key: cultureid
+
+Table: production.document
+Description: Product maintenance documents.
+- title: character varying(50), not null - Title of the document.
+- owner: integer, not null - Employee who controls the document.  Foreign key to Employee.BusinessEntityID
+- folderflag: public."Flag", not null - 0 = This is a folder, 1 = This is a document.
+- filename: character varying(400), not null - File name of the document
+- fileextension: character varying(8), nullable - File extension indicating the document type. For example, .doc or .txt.
+- revision: character(5), not null - Revision number of the document.
+- changenumber: integer, not null - Engineering change approval number.
+- status: smallint, not null - 1 = Pending approval, 2 = Approved, 3 = Obsolete
+- documentsummary: text, nullable - Document abstract.
+- document: bytea, nullable - Complete document.
+- rowguid: uuid, not null - ROWGUIDCOL number uniquely identifying the record. Required for FileStream.
+- modifieddate: timestamp without time zone, not null
+- documentnode: character varying, not null - Primary key for Document records.
+Primary key: productid, businessentityid
+Foreign keys:
+- (owner) -> humanresources.employee(businessentityid)
+
+Table: production.illustration
+Description: Bicycle assembly diagrams.
+- illustrationid: integer, not null - Primary key for Illustration records.
+- diagram: xml, nullable - Illustrations used in manufacturing instructions. Stored as XML.
+- modifieddate: timestamp without time zone, not null
+Primary key: illustrationid
+
+Table: production.location
+Description: Product inventory and manufacturing locations.
+- locationid: integer, not null - Primary key for Location records.
+- name: public."Name", not null - Location description.
+- costrate: numeric, not null - Standard hourly cost of the manufacturing location.
+- availability: numeric(8,2), not null - Work capacity (in hours) of the manufacturing location.
+- modifieddate: timestamp without time zone, not null
+Primary key: locationid
+
+Table: production.product
+Description: Products sold or used in the manfacturing of sold products.
+- productid: integer, not null - Primary key for Product records.
+- name: public."Name", not null - Name of the product.
+- productnumber: character varying(25), not null - Unique product identification number.
+- makeflag: public."Flag", not null - 0 = Product is purchased, 1 = Product is manufactured in-house.
+- finishedgoodsflag: public."Flag", not null - 0 = Product is not a salable item. 1 = Product is salable.
+- color: character varying(15), nullable - Product color.
+- safetystocklevel: smallint, not null - Minimum inventory quantity.
+- reorderpoint: smallint, not null - Inventory level that triggers a purchase order or work order.
+- standardcost: numeric, not null - Standard cost of the product.
+- listprice: numeric, not null - Selling price.
+- size: character varying(5), nullable - Product size.
+- sizeunitmeasurecode: character(3), nullable - Unit of measure for Size column.
+- weightunitmeasurecode: character(3), nullable - Unit of measure for Weight column.
+- weight: numeric(8,2), nullable - Product weight.
+- daystomanufacture: integer, not null - Number of days required to manufacture the product.
+- productline: character(2), nullable - R = Road, M = Mountain, T = Touring, S = Standard
+- class: character(2), nullable - H = High, M = Medium, L = Low
+- style: character(2), nullable - W = Womens, M = Mens, U = Universal
+- productsubcategoryid: integer, nullable - Product is a member of this product subcategory. Foreign key to ProductSubCategory.ProductSubCategoryID.
+- productmodelid: integer, nullable - Product is a member of this product model. Foreign key to ProductModel.ProductModelID.
+- sellstartdate: timestamp without time zone, not null - Date the product was available for sale.
+- sellenddate: timestamp without time zone, nullable - Date the product was no longer available for sale.
+- discontinueddate: timestamp without time zone, nullable - Date the product was discontinued.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: productid
+Foreign keys:
+- (productmodelid) -> production.productmodel(productmodelid)
+- (productsubcategoryid) -> production.productsubcategory(productsubcategoryid)
+- (sizeunitmeasurecode) -> production.unitmeasure(unitmeasurecode)
+- (weightunitmeasurecode) -> production.unitmeasure(unitmeasurecode)
+
+Table: production.productcategory
+Description: High-level product categorization.
+- productcategoryid: integer, not null - Primary key for ProductCategory records.
+- name: public."Name", not null - Category description.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: productcategoryid
+
+Table: production.productcosthistory
+Description: Changes in the cost of a product over time.
+- productid: integer, not null - Product identification number. Foreign key to Product.ProductID
+- startdate: timestamp without time zone, not null - Product cost start date.
+- enddate: timestamp without time zone, nullable - Product cost end date.
+- standardcost: numeric, not null - Standard cost of the product.
+- modifieddate: timestamp without time zone, not null
+Primary key: productid, startdate
+Foreign keys:
+- (productid) -> production.product(productid)
+
+Table: production.productdescription
+Description: Product descriptions in several languages.
+- productdescriptionid: integer, not null - Primary key for ProductDescription records.
+- description: character varying(400), not null - Description of the product.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: productdescriptionid
+
+Table: production.productdocument
+Description: Cross-reference table mapping products to related product documents.
+- productid: integer, not null - Product identification number. Foreign key to Product.ProductID.
+- modifieddate: timestamp without time zone, not null
+- documentnode: character varying, not null - Document identification number. Foreign key to Document.DocumentNode.
+Primary key: productid, documentnode
+Foreign keys:
+- (documentnode) -> production.document(documentnode)
+- (productid) -> production.product(productid)
+
+Table: production.productinventory
+Description: Product inventory information.
+- productid: integer, not null - Product identification number. Foreign key to Product.ProductID.
+- locationid: smallint, not null - Inventory location identification number. Foreign key to Location.LocationID.
+- shelf: character varying(10), not null - Storage compartment within an inventory location.
+- bin: smallint, not null - Storage container on a shelf in an inventory location.
+- quantity: smallint, not null - Quantity of products in the inventory location.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: productid, locationid
+Foreign keys:
+- (locationid) -> production.location(locationid)
+- (productid) -> production.product(productid)
+
+Table: production.productlistpricehistory
+Description: Changes in the list price of a product over time.
+- productid: integer, not null - Product identification number. Foreign key to Product.ProductID
+- startdate: timestamp without time zone, not null - List price start date.
+- enddate: timestamp without time zone, nullable - List price end date
+- listprice: numeric, not null - Product list price.
+- modifieddate: timestamp without time zone, not null
+Primary key: productid, startdate
+Foreign keys:
+- (productid) -> production.product(productid)
+
+Table: production.productmodel
+Description: Product model classification.
+- productmodelid: integer, not null - Primary key for ProductModel records.
+- name: public."Name", not null - Product model description.
+- catalogdescription: xml, nullable - Detailed product catalog information in xml format.
+- instructions: xml, nullable - Manufacturing instructions in xml format.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: productmodelid
+
+Table: production.productmodelillustration
+Description: Cross-reference table mapping product models and illustrations.
+- productmodelid: integer, not null - Primary key. Foreign key to ProductModel.ProductModelID.
+- illustrationid: integer, not null - Primary key. Foreign key to Illustration.IllustrationID.
+- modifieddate: timestamp without time zone, not null
+Primary key: productmodelid, illustrationid
+Foreign keys:
+- (illustrationid) -> production.illustration(illustrationid)
+- (productmodelid) -> production.productmodel(productmodelid)
+
+Table: production.productmodelproductdescriptionculture
+Description: Cross-reference table mapping product descriptions and the language the description is written in.
+- productmodelid: integer, not null - Primary key. Foreign key to ProductModel.ProductModelID.
+- productdescriptionid: integer CONSTRAINT productmodelproductdescriptioncul_productdescriptionid_not_null, not null - Primary key. Foreign key to ProductDescription.ProductDescriptionID.
+- cultureid: character(6), not null - Culture identification number. Foreign key to Culture.CultureID.
+- modifieddate: timestamp without time zone, not null
+Primary key: productmodelid, productdescriptionid, cultureid
+Foreign keys:
+- (cultureid) -> production.culture(cultureid)
+- (productdescriptionid) -> production.productdescription(productdescriptionid)
+- (productmodelid) -> production.productmodel(productmodelid)
+
+Table: production.productphoto
+Description: Product images.
+- productphotoid: integer, not null - Primary key for ProductPhoto records.
+- thumbnailphoto: bytea, nullable - Small image of the product.
+- thumbnailphotofilename: character varying(50), nullable - Small image file name.
+- largephoto: bytea, nullable - Large image of the product.
+- largephotofilename: character varying(50), nullable - Large image file name.
+- modifieddate: timestamp without time zone, not null
+Primary key: productphotoid
+
+Table: production.productproductphoto
+Description: Cross-reference table mapping products and product photos.
+- productid: integer, not null - Product identification number. Foreign key to Product.ProductID.
+- productphotoid: integer, not null - Product photo identification number. Foreign key to ProductPhoto.ProductPhotoID.
+- primary: public."Flag", not null
+- modifieddate: timestamp without time zone, not null
+Primary key: productid, productphotoid
+Foreign keys:
+- (productphotoid) -> production.productphoto(productphotoid)
+- (productid) -> production.product(productid)
+
+Table: production.productreview
+Description: Customer reviews of products they have purchased.
+- productreviewid: integer, not null - Primary key for ProductReview records.
+- productid: integer, not null - Product identification number. Foreign key to Product.ProductID.
+- reviewername: public."Name", not null - Name of the reviewer.
+- reviewdate: timestamp without time zone, not null - Date review was submitted.
+- emailaddress: character varying(50), not null - Reviewer's e-mail address.
+- rating: integer, not null - Product rating given by the reviewer. Scale is 1 to 5 with 5 as the highest rating.
+- comments: character varying(3850), nullable - Reviewer's comments
+- modifieddate: timestamp without time zone, not null
+Primary key: productreviewid
+Foreign keys:
+- (productid) -> production.product(productid)
+
+Table: production.productsubcategory
+Description: Product subcategories. See ProductCategory table.
+- productsubcategoryid: integer, not null - Primary key for ProductSubcategory records.
+- productcategoryid: integer, not null - Product category identification number. Foreign key to ProductCategory.ProductCategoryID.
+- name: public."Name", not null - Subcategory description.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: productsubcategoryid
+Foreign keys:
+- (productcategoryid) -> production.productcategory(productcategoryid)
+
+Table: production.scrapreason
+Description: Manufacturing failure reasons lookup table.
+- scrapreasonid: integer, not null - Primary key for ScrapReason records.
+- name: public."Name", not null - Failure description.
+- modifieddate: timestamp without time zone, not null
+Primary key: scrapreasonid
+
+Table: production.transactionhistory
+Description: Record of each purchase order, sales order, or work order transaction year to date.
+- transactionid: integer, not null - Primary key for TransactionHistory records.
+- productid: integer, not null - Product identification number. Foreign key to Product.ProductID.
+- referenceorderid: integer, not null - Purchase order, sales order, or work order identification number.
+- referenceorderlineid: integer, not null - Line number associated with the purchase order, sales order, or work order.
+- transactiondate: timestamp without time zone, not null - Date and time of the transaction.
+- transactiontype: character(1), not null - W = WorkOrder, S = SalesOrder, P = PurchaseOrder
+- quantity: integer, not null - Product quantity.
+- actualcost: numeric, not null - Product cost.
+- modifieddate: timestamp without time zone, not null
+Primary key: transactionid
+Foreign keys:
+- (productid) -> production.product(productid)
+
+Table: production.transactionhistoryarchive
+Description: Transactions for previous years.
+- transactionid: integer, not null - Primary key for TransactionHistoryArchive records.
+- productid: integer, not null - Product identification number. Foreign key to Product.ProductID.
+- referenceorderid: integer, not null - Purchase order, sales order, or work order identification number.
+- referenceorderlineid: integer, not null - Line number associated with the purchase order, sales order, or work order.
+- transactiondate: timestamp without time zone, not null - Date and time of the transaction.
+- transactiontype: character(1), not null - W = Work Order, S = Sales Order, P = Purchase Order
+- quantity: integer, not null - Product quantity.
+- actualcost: numeric, not null - Product cost.
+- modifieddate: timestamp without time zone, not null
+Primary key: transactionid
+
+Table: production.unitmeasure
+Description: Unit of measure lookup table.
+- unitmeasurecode: character(3), not null - Primary key.
+- name: public."Name", not null - Unit of measure description.
+- modifieddate: timestamp without time zone, not null
+Primary key: unitmeasurecode
+
+Table: production.workorder
+Description: Manufacturing work orders.
+- workorderid: integer, not null - Primary key for WorkOrder records.
+- productid: integer, not null - Product identification number. Foreign key to Product.ProductID.
+- orderqty: integer, not null - Product quantity to build.
+- scrappedqty: smallint, not null - Quantity that failed inspection.
+- startdate: timestamp without time zone, not null - Work order start date.
+- enddate: timestamp without time zone, nullable - Work order end date.
+- duedate: timestamp without time zone, not null - Work order due date.
+- scrapreasonid: smallint, nullable - Reason for inspection failure.
+- modifieddate: timestamp without time zone, not null
+Primary key: workorderid
+Foreign keys:
+- (productid) -> production.product(productid)
+- (scrapreasonid) -> production.scrapreason(scrapreasonid)
+
+Table: production.workorderrouting
+Description: Work order details.
+- workorderid: integer, not null - Primary key. Foreign key to WorkOrder.WorkOrderID.
+- productid: integer, not null - Primary key. Foreign key to Product.ProductID.
+- operationsequence: smallint, not null - Primary key. Indicates the manufacturing process sequence.
+- locationid: smallint, not null - Manufacturing location where the part is processed. Foreign key to Location.LocationID.
+- scheduledstartdate: timestamp without time zone, not null - Planned manufacturing start date.
+- scheduledenddate: timestamp without time zone, not null - Planned manufacturing end date.
+- actualstartdate: timestamp without time zone, nullable - Actual start date.
+- actualenddate: timestamp without time zone, nullable - Actual end date.
+- actualresourcehrs: numeric(9,4), nullable - Number of manufacturing hours used.
+- plannedcost: numeric, not null - Estimated manufacturing cost.
+- actualcost: numeric, nullable - Actual manufacturing cost.
+- modifieddate: timestamp without time zone, not null
+Primary key: workorderid, productid, operationsequence
+Foreign keys:
+- (locationid) -> production.location(locationid)
+- (workorderid) -> production.workorder(workorderid)
+
+Table: sales.countryregioncurrency
+Description: Cross-reference table mapping ISO currency codes to a country or region.
+- countryregioncode: character varying(3), not null - ISO code for countries and regions. Foreign key to CountryRegion.CountryRegionCode.
+- currencycode: character(3), not null - ISO standard currency code. Foreign key to Currency.CurrencyCode.
+- modifieddate: timestamp without time zone, not null
+Primary key: countryregioncode, currencycode
+Foreign keys:
+- (countryregioncode) -> person.countryregion(countryregioncode)
+- (currencycode) -> sales.currency(currencycode)
+
+Table: sales.currency
+Description: Lookup table containing standard ISO currencies.
+- currencycode: character(3), not null - The ISO code for the Currency.
+- name: public."Name", not null - Currency name.
+- modifieddate: timestamp without time zone, not null
+Primary key: currencycode
+
+Table: sales.currencyrate
+Description: Currency exchange rates.
+- currencyrateid: integer, not null - Primary key for CurrencyRate records.
+- currencyratedate: timestamp without time zone, not null - Date and time the exchange rate was obtained.
+- fromcurrencycode: character(3), not null - Exchange rate was converted from this currency code.
+- tocurrencycode: character(3), not null - Exchange rate was converted to this currency code.
+- averagerate: numeric, not null - Average exchange rate for the day.
+- endofdayrate: numeric, not null - Final exchange rate for the day.
+- modifieddate: timestamp without time zone, not null
+Primary key: currencyrateid
+Foreign keys:
+- (fromcurrencycode) -> sales.currency(currencycode)
+- (tocurrencycode) -> sales.currency(currencycode)
+
+Table: sales.customer
+Description: Current customer information. Also see the Person and Store tables.
+- customerid: integer, not null - Primary key.
+- personid: integer, nullable - Foreign key to Person.BusinessEntityID
+- storeid: integer, nullable - Foreign key to Store.BusinessEntityID
+- territoryid: integer, nullable - ID of the territory in which the customer is located. Foreign key to SalesTerritory.SalesTerritoryID.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: customerid
+Foreign keys:
+- (personid) -> person.person(businessentityid)
+- (territoryid) -> sales.salesterritory(territoryid)
+- (storeid) -> sales.store(businessentityid)
+
+Table: sales.salesorderdetail
+Description: Individual products associated with a specific sales order. See SalesOrderHeader.
+- salesorderid: integer, not null - Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
+- salesorderdetailid: integer, not null - Primary key. One incremental unique number per product sold.
+- carriertrackingnumber: character varying(25), nullable - Shipment tracking number supplied by the shipper.
+- orderqty: smallint, not null - Quantity ordered per product.
+- productid: integer, not null - Product sold to customer. Foreign key to Product.ProductID.
+- specialofferid: integer, not null - Promotional code. Foreign key to SpecialOffer.SpecialOfferID.
+- unitprice: numeric, not null - Selling price of a single product.
+- unitpricediscount: numeric, not null - Discount amount.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: salesorderid, salesorderdetailid
+Foreign keys:
+- (salesorderid) -> sales.salesorderheader(salesorderid)
+- (specialofferid, productid) -> sales.specialofferproduct(specialofferid, productid)
+
+Table: sales.salesorderheader
+Description: General sales order information.
+- salesorderid: integer, not null - Primary key.
+- revisionnumber: smallint, not null - Incremental number to track changes to the sales order over time.
+- orderdate: timestamp without time zone, not null - Dates the sales order was created.
+- duedate: timestamp without time zone, not null - Date the order is due to the customer.
+- shipdate: timestamp without time zone, nullable - Date the order was shipped to the customer.
+- status: smallint, not null - Order current status. 1 = In process; 2 = Approved; 3 = Backordered; 4 = Rejected; 5 = Shipped; 6 = Cancelled
+- onlineorderflag: public."Flag", not null - 0 = Order placed by sales person. 1 = Order placed online by customer.
+- purchaseordernumber: public."OrderNumber", nullable - Customer purchase order number reference.
+- accountnumber: public."AccountNumber", nullable - Financial accounting number reference.
+- customerid: integer, not null - Customer identification number. Foreign key to Customer.BusinessEntityID.
+- salespersonid: integer, nullable - Sales person who created the sales order. Foreign key to SalesPerson.BusinessEntityID.
+- territoryid: integer, nullable - Territory in which the sale was made. Foreign key to SalesTerritory.SalesTerritoryID.
+- billtoaddressid: integer, not null - Customer billing address. Foreign key to Address.AddressID.
+- shiptoaddressid: integer, not null - Customer shipping address. Foreign key to Address.AddressID.
+- shipmethodid: integer, not null - Shipping method. Foreign key to ShipMethod.ShipMethodID.
+- creditcardid: integer, nullable - Credit card identification number. Foreign key to CreditCard.CreditCardID.
+- creditcardapprovalcode: character varying(15), nullable - Approval code provided by the credit card company.
+- currencyrateid: integer, nullable - Currency exchange rate used. Foreign key to CurrencyRate.CurrencyRateID.
+- subtotal: numeric, not null - Sales subtotal. Computed as SUM(SalesOrderDetail.LineTotal)for the appropriate SalesOrderID.
+- taxamt: numeric, not null - Tax amount.
+- freight: numeric, not null - Shipping cost.
+- totaldue: numeric, nullable - Total due from customer. Computed as Subtotal + TaxAmt + Freight.
+- comment: character varying(128), nullable - Sales representative comments.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: salesorderid
+Foreign keys:
+- (billtoaddressid) -> person.address(addressid)
+- (shiptoaddressid) -> person.address(addressid)
+- (creditcardid) -> sales.creditcard(creditcardid)
+- (currencyrateid) -> sales.currencyrate(currencyrateid)
+- (customerid) -> sales.customer(customerid)
+- (salespersonid) -> sales.salesperson(businessentityid)
+- (territoryid) -> sales.salesterritory(territoryid)
+- (shipmethodid) -> purchasing.shipmethod(shipmethodid)
+
+Table: sales.salesorderheadersalesreason
+Description: Cross-reference table mapping sales orders to sales reason codes.
+- salesorderid: integer, not null - Primary key. Foreign key to SalesOrderHeader.SalesOrderID.
+- salesreasonid: integer, not null - Primary key. Foreign key to SalesReason.SalesReasonID.
+- modifieddate: timestamp without time zone, not null
+Primary key: salesorderid, salesreasonid
+Foreign keys:
+- (salesorderid) -> sales.salesorderheader(salesorderid)
+- (salesreasonid) -> sales.salesreason(salesreasonid)
+
+Table: sales.salesperson
+Description: Sales representative current information.
+- businessentityid: integer, not null - Primary key for SalesPerson records. Foreign key to Employee.BusinessEntityID
+- territoryid: integer, nullable - Territory currently assigned to. Foreign key to SalesTerritory.SalesTerritoryID.
+- salesquota: numeric, nullable - Projected yearly sales.
+- bonus: numeric, not null - Bonus due if quota is met.
+- commissionpct: numeric, not null - Commision percent received per sale.
+- salesytd: numeric, not null - Sales total year to date.
+- saleslastyear: numeric, not null - Sales total of previous year.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: businessentityid
+Foreign keys:
+- (businessentityid) -> humanresources.employee(businessentityid)
+- (territoryid) -> sales.salesterritory(territoryid)
+
+Table: sales.salespersonquotahistory
+Description: Sales performance tracking.
+- businessentityid: integer, not null - Sales person identification number. Foreign key to SalesPerson.BusinessEntityID.
+- quotadate: timestamp without time zone, not null - Sales quota date.
+- salesquota: numeric, not null - Sales quota amount.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: businessentityid, quotadate
+Foreign keys:
+- (businessentityid) -> sales.salesperson(businessentityid)
+
+Table: sales.salesreason
+Description: Lookup table of customer purchase reasons.
+- salesreasonid: integer, not null - Primary key for SalesReason records.
+- name: public."Name", not null - Sales reason description.
+- reasontype: public."Name", not null - Category the sales reason belongs to.
+- modifieddate: timestamp without time zone, not null
+Primary key: salesreasonid
+
+Table: sales.salestaxrate
+Description: Tax rate lookup table.
+- salestaxrateid: integer, not null - Primary key for SalesTaxRate records.
+- stateprovinceid: integer, not null - State, province, or country/region the sales tax applies to.
+- taxtype: smallint, not null - 1 = Tax applied to retail transactions, 2 = Tax applied to wholesale transactions, 3 = Tax applied to all sales (retail and wholesale) transactions.
+- taxrate: numeric, not null - Tax rate amount.
+- name: public."Name", not null - Tax rate description.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: salestaxrateid
+Foreign keys:
+- (stateprovinceid) -> person.stateprovince(stateprovinceid)
+
+Table: sales.salesterritory
+Description: Sales territory lookup table.
+- territoryid: integer, not null - Primary key for SalesTerritory records.
+- name: public."Name", not null - Sales territory description
+- countryregioncode: character varying(3), not null - ISO standard country or region code. Foreign key to CountryRegion.CountryRegionCode.
+- group: character varying(50), not null
+- salesytd: numeric, not null - Sales in the territory year to date.
+- saleslastyear: numeric, not null - Sales in the territory the previous year.
+- costytd: numeric, not null - Business costs in the territory year to date.
+- costlastyear: numeric, not null - Business costs in the territory the previous year.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: territoryid
+Foreign keys:
+- (countryregioncode) -> person.countryregion(countryregioncode)
+
+Table: sales.salesterritoryhistory
+Description: Sales representative transfers to other sales territories.
+- businessentityid: integer, not null - Primary key. The sales rep.  Foreign key to SalesPerson.BusinessEntityID.
+- territoryid: integer, not null - Primary key. Territory identification number. Foreign key to SalesTerritory.SalesTerritoryID.
+- startdate: timestamp without time zone, not null - Primary key. Date the sales representive started work in the territory.
+- enddate: timestamp without time zone, nullable - Date the sales representative left work in the territory.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: businessentityid, startdate, territoryid
+Foreign keys:
+- (businessentityid) -> sales.salesperson(businessentityid)
+- (territoryid) -> sales.salesterritory(territoryid)
+
+Table: sales.shoppingcartitem
+Description: Contains online customer orders until the order is submitted or cancelled.
+- shoppingcartitemid: integer, not null - Primary key for ShoppingCartItem records.
+- shoppingcartid: character varying(50), not null - Shopping cart identification number.
+- quantity: integer, not null - Product quantity ordered.
+- productid: integer, not null - Product ordered. Foreign key to Product.ProductID.
+- datecreated: timestamp without time zone, not null - Date the time the record was created.
+- modifieddate: timestamp without time zone, not null
+Primary key: shoppingcartitemid
+Foreign keys:
+- (productid) -> production.product(productid)
+
+Table: sales.specialoffer
+Description: Sale discounts lookup table.
+- specialofferid: integer, not null - Primary key for SpecialOffer records.
+- description: character varying(255), not null - Discount description.
+- discountpct: numeric, not null - Discount precentage.
+- type: character varying(50), not null - Discount type category.
+- category: character varying(50), not null - Group the discount applies to such as Reseller or Customer.
+- startdate: timestamp without time zone, not null - Discount start date.
+- enddate: timestamp without time zone, not null - Discount end date.
+- minqty: integer, not null - Minimum discount percent allowed.
+- maxqty: integer, nullable - Maximum discount percent allowed.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: specialofferid
+
+Table: sales.specialofferproduct
+Description: Cross-reference table mapping products to special offer discounts.
+- specialofferid: integer, not null - Primary key for SpecialOfferProduct records.
+- productid: integer, not null - Product identification number. Foreign key to Product.ProductID.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: specialofferid, productid
+Foreign keys:
+- (productid) -> production.product(productid)
+- (specialofferid) -> sales.specialoffer(specialofferid)
+
+Table: sales.store
+Description: Customers (resellers) of Adventure Works products.
+- businessentityid: integer, not null - Primary key. Foreign key to Customer.BusinessEntityID.
+- name: public."Name", not null - Name of the store.
+- salespersonid: integer, nullable - ID of the sales person assigned to the customer. Foreign key to SalesPerson.BusinessEntityID.
+- demographics: xml, nullable - Demographic informationg about the store such as the number of employees, annual sales and store type.
+- rowguid: uuid, not null
+- modifieddate: timestamp without time zone, not null
+Primary key: businessentityid
+Foreign keys:
+- (businessentityid) -> person.businessentity(businessentityid)
+- (salespersonid) -> sales.salesperson(businessentityid)

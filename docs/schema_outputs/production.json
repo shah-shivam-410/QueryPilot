@@ -1,0 +1,1177 @@
+[
+  {
+    "table": "billofmaterials",
+    "full_name": "production.billofmaterials",
+    "description": "Items required to make bicycles and bicycle subassemblies. It identifies the heirarchical relationship between a parent product and its components.",
+    "columns": [
+      {
+        "name": "billofmaterialsid",
+        "type": "integer",
+        "description": "Primary key for BillOfMaterials records."
+      },
+      {
+        "name": "productassemblyid",
+        "type": "integer",
+        "description": "Parent product identification number. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "componentid",
+        "type": "integer",
+        "description": "Component identification number. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "startdate",
+        "type": "timestamp",
+        "description": "Date the component started being used in the assembly item."
+      },
+      {
+        "name": "enddate",
+        "type": "timestamp",
+        "description": "Date the component stopped being used in the assembly item."
+      },
+      {
+        "name": "unitmeasurecode",
+        "type": "character(3)",
+        "description": "Standard code identifying the unit of measure for the quantity."
+      },
+      {
+        "name": "bomlevel",
+        "type": "smallint",
+        "description": "Indicates the depth the component is from its parent (AssemblyID)."
+      },
+      {
+        "name": "perassemblyqty",
+        "type": "numeric(8,2)",
+        "description": "Quantity of the component needed to create the assembly."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_BillOfMaterials_BOMLevel\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_BillOfMaterials_EndDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_BillOfMaterials_PerAssemblyQty\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_BillOfMaterials_ProductAssemblyID\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "culture",
+    "full_name": "production.culture",
+    "description": "Lookup table containing the languages in which some AdventureWorks data is stored.",
+    "columns": [
+      {
+        "name": "cultureid",
+        "type": "character(6)",
+        "description": "Primary key for Culture records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Culture description."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "document",
+    "full_name": "production.document",
+    "description": "Product maintenance documents.",
+    "columns": [
+      {
+        "name": "title",
+        "type": "character",
+        "description": "Title of the document."
+      },
+      {
+        "name": "owner",
+        "type": "integer",
+        "description": "Employee who controls the document.  Foreign key to Employee.BusinessEntityID"
+      },
+      {
+        "name": "folderflag",
+        "type": "public.\"Flag\"",
+        "description": "0 = This is a folder, 1 = This is a document."
+      },
+      {
+        "name": "filename",
+        "type": "character",
+        "description": "File name of the document"
+      },
+      {
+        "name": "fileextension",
+        "type": "character",
+        "description": "File extension indicating the document type. For example, .doc or .txt."
+      },
+      {
+        "name": "revision",
+        "type": "character(5)",
+        "description": "Revision number of the document."
+      },
+      {
+        "name": "changenumber",
+        "type": "integer",
+        "description": "Engineering change approval number."
+      },
+      {
+        "name": "status",
+        "type": "smallint",
+        "description": "1 = Pending approval, 2 = Approved, 3 = Obsolete"
+      },
+      {
+        "name": "documentsummary",
+        "type": "text",
+        "description": "Document abstract."
+      },
+      {
+        "name": "document",
+        "type": "bytea",
+        "description": "Complete document."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": "ROWGUIDCOL number uniquely identifying the record. Required for FileStream."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "documentnode",
+        "type": "character",
+        "description": "Primary key for Document records."
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Document_Status\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "illustration",
+    "full_name": "production.illustration",
+    "description": "Bicycle assembly diagrams.",
+    "columns": [
+      {
+        "name": "illustrationid",
+        "type": "integer",
+        "description": "Primary key for Illustration records."
+      },
+      {
+        "name": "diagram",
+        "type": "xml",
+        "description": "Illustrations used in manufacturing instructions. Stored as XML."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "location",
+    "full_name": "production.location",
+    "description": "Product inventory and manufacturing locations.",
+    "columns": [
+      {
+        "name": "locationid",
+        "type": "integer",
+        "description": "Primary key for Location records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Location description."
+      },
+      {
+        "name": "costrate",
+        "type": "numeric",
+        "description": "Standard hourly cost of the manufacturing location."
+      },
+      {
+        "name": "availability",
+        "type": "numeric(8,2)",
+        "description": "Work capacity (in hours) of the manufacturing location."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Location_Availability\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Location_CostRate\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "product",
+    "full_name": "production.product",
+    "description": "Products sold or used in the manfacturing of sold products.",
+    "columns": [
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Primary key for Product records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Name of the product."
+      },
+      {
+        "name": "productnumber",
+        "type": "character",
+        "description": "Unique product identification number."
+      },
+      {
+        "name": "makeflag",
+        "type": "public.\"Flag\"",
+        "description": "0 = Product is purchased, 1 = Product is manufactured in-house."
+      },
+      {
+        "name": "finishedgoodsflag",
+        "type": "public.\"Flag\"",
+        "description": "0 = Product is not a salable item. 1 = Product is salable."
+      },
+      {
+        "name": "color",
+        "type": "character",
+        "description": "Product color."
+      },
+      {
+        "name": "safetystocklevel",
+        "type": "smallint",
+        "description": "Minimum inventory quantity."
+      },
+      {
+        "name": "reorderpoint",
+        "type": "smallint",
+        "description": "Inventory level that triggers a purchase order or work order."
+      },
+      {
+        "name": "standardcost",
+        "type": "numeric",
+        "description": "Standard cost of the product."
+      },
+      {
+        "name": "listprice",
+        "type": "numeric",
+        "description": "Selling price."
+      },
+      {
+        "name": "size",
+        "type": "character",
+        "description": "Product size."
+      },
+      {
+        "name": "sizeunitmeasurecode",
+        "type": "character(3)",
+        "description": "Unit of measure for Size column."
+      },
+      {
+        "name": "weightunitmeasurecode",
+        "type": "character(3)",
+        "description": "Unit of measure for Weight column."
+      },
+      {
+        "name": "weight",
+        "type": "numeric(8,2)",
+        "description": "Product weight."
+      },
+      {
+        "name": "daystomanufacture",
+        "type": "integer",
+        "description": "Number of days required to manufacture the product."
+      },
+      {
+        "name": "productline",
+        "type": "character(2)",
+        "description": "R = Road, M = Mountain, T = Touring, S = Standard"
+      },
+      {
+        "name": "class",
+        "type": "character(2)",
+        "description": "H = High, M = Medium, L = Low"
+      },
+      {
+        "name": "style",
+        "type": "character(2)",
+        "description": "W = Womens, M = Mens, U = Universal"
+      },
+      {
+        "name": "productsubcategoryid",
+        "type": "integer",
+        "description": "Product is a member of this product subcategory. Foreign key to ProductSubCategory.ProductSubCategoryID."
+      },
+      {
+        "name": "productmodelid",
+        "type": "integer",
+        "description": "Product is a member of this product model. Foreign key to ProductModel.ProductModelID."
+      },
+      {
+        "name": "sellstartdate",
+        "type": "timestamp",
+        "description": "Date the product was available for sale."
+      },
+      {
+        "name": "sellenddate",
+        "type": "timestamp",
+        "description": "Date the product was no longer available for sale."
+      },
+      {
+        "name": "discontinueddate",
+        "type": "timestamp",
+        "description": "Date the product was discontinued."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Product_Class\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Product_DaysToManufacture\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Product_ListPrice\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Product_ProductLine\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Product_ReorderPoint\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Product_SafetyStockLevel\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Product_SellEndDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Product_StandardCost\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Product_Style\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Product_Weight\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productcategory",
+    "full_name": "production.productcategory",
+    "description": "High-level product categorization.",
+    "columns": [
+      {
+        "name": "productcategoryid",
+        "type": "integer",
+        "description": "Primary key for ProductCategory records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Category description."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productcosthistory",
+    "full_name": "production.productcosthistory",
+    "description": "Changes in the cost of a product over time.",
+    "columns": [
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product identification number. Foreign key to Product.ProductID"
+      },
+      {
+        "name": "startdate",
+        "type": "timestamp",
+        "description": "Product cost start date."
+      },
+      {
+        "name": "enddate",
+        "type": "timestamp",
+        "description": "Product cost end date."
+      },
+      {
+        "name": "standardcost",
+        "type": "numeric",
+        "description": "Standard cost of the product."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductCostHistory_EndDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductCostHistory_StandardCost\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productdescription",
+    "full_name": "production.productdescription",
+    "description": "Product descriptions in several languages.",
+    "columns": [
+      {
+        "name": "productdescriptionid",
+        "type": "integer",
+        "description": "Primary key for ProductDescription records."
+      },
+      {
+        "name": "description",
+        "type": "character",
+        "description": "Description of the product."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productdocument",
+    "full_name": "production.productdocument",
+    "description": "Cross-reference table mapping products to related product documents.",
+    "columns": [
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product identification number. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "documentnode",
+        "type": "character",
+        "description": "Document identification number. Foreign key to Document.DocumentNode."
+      }
+    ]
+  },
+  {
+    "table": "productinventory",
+    "full_name": "production.productinventory",
+    "description": "Product inventory information.",
+    "columns": [
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product identification number. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "locationid",
+        "type": "smallint",
+        "description": "Inventory location identification number. Foreign key to Location.LocationID."
+      },
+      {
+        "name": "shelf",
+        "type": "character",
+        "description": "Storage compartment within an inventory location."
+      },
+      {
+        "name": "bin",
+        "type": "smallint",
+        "description": "Storage container on a shelf in an inventory location."
+      },
+      {
+        "name": "quantity",
+        "type": "smallint",
+        "description": "Quantity of products in the inventory location."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductInventory_Bin\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productlistpricehistory",
+    "full_name": "production.productlistpricehistory",
+    "description": "Changes in the list price of a product over time.",
+    "columns": [
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product identification number. Foreign key to Product.ProductID"
+      },
+      {
+        "name": "startdate",
+        "type": "timestamp",
+        "description": "List price start date."
+      },
+      {
+        "name": "enddate",
+        "type": "timestamp",
+        "description": "List price end date"
+      },
+      {
+        "name": "listprice",
+        "type": "numeric",
+        "description": "Product list price."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductListPriceHistory_EndDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductListPriceHistory_ListPrice\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productmodel",
+    "full_name": "production.productmodel",
+    "description": "Product model classification.",
+    "columns": [
+      {
+        "name": "productmodelid",
+        "type": "integer",
+        "description": "Primary key for ProductModel records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Product model description."
+      },
+      {
+        "name": "catalogdescription",
+        "type": "xml",
+        "description": "Detailed product catalog information in xml format."
+      },
+      {
+        "name": "instructions",
+        "type": "xml",
+        "description": "Manufacturing instructions in xml format."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productmodelillustration",
+    "full_name": "production.productmodelillustration",
+    "description": "Cross-reference table mapping product models and illustrations.",
+    "columns": [
+      {
+        "name": "productmodelid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to ProductModel.ProductModelID."
+      },
+      {
+        "name": "illustrationid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to Illustration.IllustrationID."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productmodelproductdescriptionculture",
+    "full_name": "production.productmodelproductdescriptionculture",
+    "description": "Cross-reference table mapping product descriptions and the language the description is written in.",
+    "columns": [
+      {
+        "name": "productmodelid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to ProductModel.ProductModelID."
+      },
+      {
+        "name": "productdescriptionid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to ProductDescription.ProductDescriptionID."
+      },
+      {
+        "name": "cultureid",
+        "type": "character(6)",
+        "description": "Culture identification number. Foreign key to Culture.CultureID."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productphoto",
+    "full_name": "production.productphoto",
+    "description": "Product images.",
+    "columns": [
+      {
+        "name": "productphotoid",
+        "type": "integer",
+        "description": "Primary key for ProductPhoto records."
+      },
+      {
+        "name": "thumbnailphoto",
+        "type": "bytea",
+        "description": "Small image of the product."
+      },
+      {
+        "name": "thumbnailphotofilename",
+        "type": "character",
+        "description": "Small image file name."
+      },
+      {
+        "name": "largephoto",
+        "type": "bytea",
+        "description": "Large image of the product."
+      },
+      {
+        "name": "largephotofilename",
+        "type": "character",
+        "description": "Large image file name."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productproductphoto",
+    "full_name": "production.productproductphoto",
+    "description": "Cross-reference table mapping products and product photos.",
+    "columns": [
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product identification number. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "productphotoid",
+        "type": "integer",
+        "description": "Product photo identification number. Foreign key to ProductPhoto.ProductPhotoID."
+      },
+      {
+        "name": "\"primary\"",
+        "type": "public.\"Flag\"",
+        "description": "0 = Photo is not the principal image. 1 = Photo is the principal image."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productreview",
+    "full_name": "production.productreview",
+    "description": "Customer reviews of products they have purchased.",
+    "columns": [
+      {
+        "name": "productreviewid",
+        "type": "integer",
+        "description": "Primary key for ProductReview records."
+      },
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product identification number. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "reviewername",
+        "type": "public.\"Name\"",
+        "description": "Name of the reviewer."
+      },
+      {
+        "name": "reviewdate",
+        "type": "timestamp",
+        "description": "Date review was submitted."
+      },
+      {
+        "name": "emailaddress",
+        "type": "character",
+        "description": ""
+      },
+      {
+        "name": "rating",
+        "type": "integer",
+        "description": "Product rating given by the reviewer. Scale is 1 to 5 with 5 as the highest rating."
+      },
+      {
+        "name": "comments",
+        "type": "character",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_ProductReview_Rating\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "productsubcategory",
+    "full_name": "production.productsubcategory",
+    "description": "Product subcategories. See ProductCategory table.",
+    "columns": [
+      {
+        "name": "productsubcategoryid",
+        "type": "integer",
+        "description": "Primary key for ProductSubcategory records."
+      },
+      {
+        "name": "productcategoryid",
+        "type": "integer",
+        "description": "Product category identification number. Foreign key to ProductCategory.ProductCategoryID."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Subcategory description."
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "scrapreason",
+    "full_name": "production.scrapreason",
+    "description": "Manufacturing failure reasons lookup table.",
+    "columns": [
+      {
+        "name": "scrapreasonid",
+        "type": "integer",
+        "description": "Primary key for ScrapReason records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Failure description."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "transactionhistory",
+    "full_name": "production.transactionhistory",
+    "description": "Record of each purchase order, sales order, or work order transaction year to date.",
+    "columns": [
+      {
+        "name": "transactionid",
+        "type": "integer",
+        "description": "Primary key for TransactionHistory records."
+      },
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product identification number. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "referenceorderid",
+        "type": "integer",
+        "description": "Purchase order, sales order, or work order identification number."
+      },
+      {
+        "name": "referenceorderlineid",
+        "type": "integer",
+        "description": "Line number associated with the purchase order, sales order, or work order."
+      },
+      {
+        "name": "transactiondate",
+        "type": "timestamp",
+        "description": "Date and time of the transaction."
+      },
+      {
+        "name": "transactiontype",
+        "type": "character(1)",
+        "description": "W = WorkOrder, S = SalesOrder, P = PurchaseOrder"
+      },
+      {
+        "name": "quantity",
+        "type": "integer",
+        "description": "Product quantity."
+      },
+      {
+        "name": "actualcost",
+        "type": "numeric",
+        "description": "Product cost."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_TransactionHistory_TransactionType\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "transactionhistoryarchive",
+    "full_name": "production.transactionhistoryarchive",
+    "description": "Transactions for previous years.",
+    "columns": [
+      {
+        "name": "transactionid",
+        "type": "integer",
+        "description": "Primary key for TransactionHistoryArchive records."
+      },
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product identification number. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "referenceorderid",
+        "type": "integer",
+        "description": "Purchase order, sales order, or work order identification number."
+      },
+      {
+        "name": "referenceorderlineid",
+        "type": "integer",
+        "description": "Line number associated with the purchase order, sales order, or work order."
+      },
+      {
+        "name": "transactiondate",
+        "type": "timestamp",
+        "description": "Date and time of the transaction."
+      },
+      {
+        "name": "transactiontype",
+        "type": "character(1)",
+        "description": "W = Work Order, S = Sales Order, P = Purchase Order"
+      },
+      {
+        "name": "quantity",
+        "type": "integer",
+        "description": "Product quantity."
+      },
+      {
+        "name": "actualcost",
+        "type": "numeric",
+        "description": "Product cost."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_TransactionHistoryArchive_TransactionType\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "unitmeasure",
+    "full_name": "production.unitmeasure",
+    "description": "Unit of measure lookup table.",
+    "columns": [
+      {
+        "name": "unitmeasurecode",
+        "type": "character(3)",
+        "description": "Primary key."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Unit of measure description."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "workorder",
+    "full_name": "production.workorder",
+    "description": "Manufacturing work orders.",
+    "columns": [
+      {
+        "name": "workorderid",
+        "type": "integer",
+        "description": "Primary key for WorkOrder records."
+      },
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Product identification number. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "orderqty",
+        "type": "integer",
+        "description": "Product quantity to build."
+      },
+      {
+        "name": "scrappedqty",
+        "type": "smallint",
+        "description": "Quantity that failed inspection."
+      },
+      {
+        "name": "startdate",
+        "type": "timestamp",
+        "description": "Work order start date."
+      },
+      {
+        "name": "enddate",
+        "type": "timestamp",
+        "description": "Work order end date."
+      },
+      {
+        "name": "duedate",
+        "type": "timestamp",
+        "description": "Work order due date."
+      },
+      {
+        "name": "scrapreasonid",
+        "type": "smallint",
+        "description": "Reason for inspection failure."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_WorkOrder_EndDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_WorkOrder_OrderQty\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_WorkOrder_ScrappedQty\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "workorderrouting",
+    "full_name": "production.workorderrouting",
+    "description": "Work order details.",
+    "columns": [
+      {
+        "name": "workorderid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to WorkOrder.WorkOrderID."
+      },
+      {
+        "name": "productid",
+        "type": "integer",
+        "description": "Primary key. Foreign key to Product.ProductID."
+      },
+      {
+        "name": "operationsequence",
+        "type": "smallint",
+        "description": "Primary key. Indicates the manufacturing process sequence."
+      },
+      {
+        "name": "locationid",
+        "type": "smallint",
+        "description": "Manufacturing location where the part is processed. Foreign key to Location.LocationID."
+      },
+      {
+        "name": "scheduledstartdate",
+        "type": "timestamp",
+        "description": "Planned manufacturing start date."
+      },
+      {
+        "name": "scheduledenddate",
+        "type": "timestamp",
+        "description": "Planned manufacturing end date."
+      },
+      {
+        "name": "actualstartdate",
+        "type": "timestamp",
+        "description": "Actual start date."
+      },
+      {
+        "name": "actualenddate",
+        "type": "timestamp",
+        "description": "Actual end date."
+      },
+      {
+        "name": "actualresourcehrs",
+        "type": "numeric(9,4)",
+        "description": "Number of manufacturing hours used."
+      },
+      {
+        "name": "plannedcost",
+        "type": "numeric",
+        "description": "Estimated manufacturing cost."
+      },
+      {
+        "name": "actualcost",
+        "type": "numeric",
+        "description": "Actual manufacturing cost."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_WorkOrderRouting_ActualCost\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_WorkOrderRouting_ActualEndDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_WorkOrderRouting_ActualResourceHrs\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_WorkOrderRouting_PlannedCost\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_WorkOrderRouting_ScheduledEndDate\"",
+        "description": ""
+      }
+    ]
+  }
+]

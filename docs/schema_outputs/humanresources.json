@@ -1,0 +1,284 @@
+[
+  {
+    "table": "department",
+    "full_name": "humanresources.department",
+    "description": "Lookup table containing the departments within the Adventure Works Cycles company.",
+    "columns": [
+      {
+        "name": "departmentid",
+        "type": "integer",
+        "description": "Primary key for Department records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Name of the department."
+      },
+      {
+        "name": "groupname",
+        "type": "public.\"Name\"",
+        "description": "Name of the group to which the department belongs."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "employee",
+    "full_name": "humanresources.employee",
+    "description": "Employee information such as salary, department, and title.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Primary key for Employee records.  Foreign key to BusinessEntity.BusinessEntityID."
+      },
+      {
+        "name": "nationalidnumber",
+        "type": "character",
+        "description": "Unique national identification number such as a social security number."
+      },
+      {
+        "name": "loginid",
+        "type": "character",
+        "description": "Network login."
+      },
+      {
+        "name": "jobtitle",
+        "type": "character",
+        "description": "Work title such as Buyer or Sales Representative."
+      },
+      {
+        "name": "birthdate",
+        "type": "date",
+        "description": "Date of birth."
+      },
+      {
+        "name": "maritalstatus",
+        "type": "character(1)",
+        "description": "M = Married, S = Single"
+      },
+      {
+        "name": "gender",
+        "type": "character(1)",
+        "description": "M = Male, F = Female"
+      },
+      {
+        "name": "hiredate",
+        "type": "date",
+        "description": "Employee hired on this date."
+      },
+      {
+        "name": "salariedflag",
+        "type": "public.\"Flag\"",
+        "description": "Job classification. 0 = Hourly, not exempt from collective bargaining. 1 = Salaried, exempt from collective bargaining."
+      },
+      {
+        "name": "vacationhours",
+        "type": "smallint",
+        "description": "Number of available vacation hours."
+      },
+      {
+        "name": "sickleavehours",
+        "type": "smallint",
+        "description": "Number of available sick leave hours."
+      },
+      {
+        "name": "currentflag",
+        "type": "public.\"Flag\"",
+        "description": "0 = Inactive, 1 = Active"
+      },
+      {
+        "name": "rowguid",
+        "type": "uuid",
+        "description": ""
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "organizationnode",
+        "type": "character",
+        "description": "Where the employee is located in corporate hierarchy."
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Employee_BirthDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Employee_Gender\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Employee_HireDate\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Employee_MaritalStatus\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Employee_SickLeaveHours\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_Employee_VacationHours\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "employeedepartmenthistory",
+    "full_name": "humanresources.employeedepartmenthistory",
+    "description": "Employee department transfers.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Employee identification number. Foreign key to Employee.BusinessEntityID."
+      },
+      {
+        "name": "departmentid",
+        "type": "smallint",
+        "description": "Department in which the employee worked including currently. Foreign key to Department.DepartmentID."
+      },
+      {
+        "name": "shiftid",
+        "type": "smallint",
+        "description": "Identifies which 8-hour shift the employee works. Foreign key to Shift.Shift.ID."
+      },
+      {
+        "name": "startdate",
+        "type": "date",
+        "description": "Date the employee started work in the department."
+      },
+      {
+        "name": "enddate",
+        "type": "date",
+        "description": "Date the employee left the department. NULL = Current department."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_EmployeeDepartmentHistory_EndDate\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "employeepayhistory",
+    "full_name": "humanresources.employeepayhistory",
+    "description": "Employee pay history.",
+    "columns": [
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Employee identification number. Foreign key to Employee.BusinessEntityID."
+      },
+      {
+        "name": "ratechangedate",
+        "type": "timestamp",
+        "description": "Date the change in pay is effective"
+      },
+      {
+        "name": "rate",
+        "type": "numeric",
+        "description": "Salary hourly rate."
+      },
+      {
+        "name": "payfrequency",
+        "type": "smallint",
+        "description": "1 = Salary received monthly, 2 = Salary received biweekly"
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_EmployeePayHistory_PayFrequency\"",
+        "description": ""
+      },
+      {
+        "name": "CONSTRAINT",
+        "type": "\"CK_EmployeePayHistory_Rate\"",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "jobcandidate",
+    "full_name": "humanresources.jobcandidate",
+    "description": "R\u00c3\u00a9sum\u00c3\u00a9s submitted to Human Resources by job applicants.",
+    "columns": [
+      {
+        "name": "jobcandidateid",
+        "type": "integer",
+        "description": "Primary key for JobCandidate records."
+      },
+      {
+        "name": "businessentityid",
+        "type": "integer",
+        "description": "Employee identification number if applicant was hired. Foreign key to Employee.BusinessEntityID."
+      },
+      {
+        "name": "resume",
+        "type": "xml",
+        "description": "R\u00c3\u00a9sum\u00c3\u00a9 in XML format."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  },
+  {
+    "table": "shift",
+    "full_name": "humanresources.shift",
+    "description": "Work shift lookup table.",
+    "columns": [
+      {
+        "name": "shiftid",
+        "type": "integer",
+        "description": "Primary key for Shift records."
+      },
+      {
+        "name": "name",
+        "type": "public.\"Name\"",
+        "description": "Shift description."
+      },
+      {
+        "name": "starttime",
+        "type": "time",
+        "description": "Shift start time."
+      },
+      {
+        "name": "endtime",
+        "type": "time",
+        "description": "Shift end time."
+      },
+      {
+        "name": "modifieddate",
+        "type": "timestamp",
+        "description": ""
+      }
+    ]
+  }
+]

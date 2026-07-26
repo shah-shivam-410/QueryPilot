@@ -1,5 +1,5 @@
 from langchain_core.messages import AnyMessage
-from typing_extensions import TypedDict, Annotated, Literal, Any
+from typing_extensions import TypedDict, Annotated, Literal, Any, NotRequired
 import operator
 
 class AgentState(TypedDict):
@@ -46,7 +46,6 @@ class QueryResult(TypedDict):
 
 class AskRequest(TypedDict):
     requirement: str = Annotated[str, ...]
-    execute: bool = True
 
 class AskResponse(TypedDict):
     requirement: str
@@ -56,5 +55,5 @@ class AskResponse(TypedDict):
     assumptions: list[str] = []
     result: QueryResult | None = None
     # When backend has validation/runtime errors, populate these fields.
-    message: str | None = None
-    errors: list[str] | None = None
+    message: NotRequired[str | None]
+    errors: NotRequired[list[str] | None]

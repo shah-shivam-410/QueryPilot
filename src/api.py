@@ -61,31 +61,38 @@ def ask(request: AskRequest) -> AskResponse:
         }
         raise HTTPException(status_code=400, detail=detail)
 
-    if request["execute"] is False:
-        return AskResponse(
-            requirement=request["requirement"],
-            query=final_sql,
-            explanation=result.get("explanation"),
-            tables_used=result.get("tables_used", []),
-            assumptions=result.get("assumptions", []),
-            result=None,
-        )
-    else:
-        try:
-            db_exec_result = execute_sql(final_sql)
-        except Exception as exc:
-            logger.error(f"SQL execution failed: {exc}", exc_info=True)
-            raise HTTPException(status_code=500, detail=f"SQL execution failed: {exc}") from exc
-
+    # Return generation-only response (execution moved to /execute endpoint)
     resp = AskResponse(
         requirement=request["requirement"],
         query=final_sql,
-        explanation=result["explanation"],
-        tables_used=result["tables_used"],
-        assumptions=result["assumptions"],
-        result=db_exec_result,
+        explanation=result.get("explanation"),
+        tables_used=result.get("tables_used", []),
+        assumptions=result.get("assumptions", []),
+        result=None,
     )
-   
+
     logger.info(f"AskResponse: {resp}")
     return resp
 
+
+@webapp.post("/execute")
+def execute_query(payload: dict):
+    """Execute a provided SQL query using the db_executor and return QueryResult-ish dict.
+    The UI calls this with { query: "SELECT ..." } after generation.
+    """
+    sql = payload.get("query") if isinstance(payload, dict) else None
+    if not sql:
+        raise HTTPException(status_code=400, detail="No SQL query provided for execution")
+
+    try:
+        db_exec_result = execute_sql(sql)
+    except Exception as exc:
+        logger.error(f"SQL execution failed: {exc}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"SQL execution failed: {exc}") from exc
+
+    # return as JSON-friendly dict
+    return {
+        "columns": db_exec_result["columns"],
+        "rows": db_exec_result["rows"],
+        "row_count": db_exec_result["row_count"],
+    }

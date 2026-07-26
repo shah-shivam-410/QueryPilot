@@ -1,11 +1,11 @@
 # SQL Pilot Agent
 
-A lightweight local web app that converts natural language requirements into SQL queries, optionally executes them against a configured PostgreSQL database, and returns query results with explanation and assumptions.
+A lightweight local web app that converts natural language requirements into SQL queries, exposes a separate execution endpoint to run generated SQL against a configured PostgreSQL database, and returns results or explanation/assumptions.
 
 ## Features
 
 - Natural-language to SQL generation using an AI-backed query agent
-- Optional SQL execution against a PostgreSQL database
+- Separate SQL execution endpoint (`POST /execute`) to run generated queries against a PostgreSQL database
 - Built-in safety and guardrails for SELECT-only access
 - Web UI for quick question submission and SQL copy support
 - Result preview with row count and explanation context
@@ -79,16 +79,18 @@ http://127.0.0.1:8000/ui
 
 - `GET /health` — health check
 - `GET /ui` — serves the frontend UI page
-- `POST /ask` — submit a requirement and receive SQL, explanation, assumptions, and optional query results
+- `POST /ask` — submit a requirement and receive SQL, explanation, and assumptions
+- `POST /execute` — execute a provided SQL query and return results (accepts `{ "query": "..." }`)
 
 ### `POST /ask` request body
 
 ```json
 {
-  "requirement": "Show the top 10 products by total sales in the sales schema",
-  "execute": true
+  "requirement": "Show the top 10 products by total sales in the sales schema"
 }
 ```
+
+Note: Execution is handled by a separate endpoint `POST /execute` which accepts `{ "query": "<sql>" }` and returns query results.
 
 ### Sample response
 

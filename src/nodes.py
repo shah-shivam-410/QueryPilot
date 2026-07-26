@@ -31,15 +31,15 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# llm = ChatGoogleGenerativeAI(
-#     model="gemini-1.5-flash",
-#     temperature=0,
-# )
-
-llm = ChatOpenAI(
-    model="gpt-4o-mini",
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
     temperature=0,
 )
+
+# llm = ChatOpenAI(
+#     model="gpt-4o-mini",
+#     temperature=0,
+# )
 
 def sql_builder(state: AgentState) -> AgentState:
     """ This node will build initial SQL query from theuser requirement. """

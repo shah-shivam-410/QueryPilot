@@ -19,9 +19,13 @@ class Config(BaseSettings):
     openai_api_key: str = Field(default="", alias="OPENAI_API_KEY")
     openai_model: str = Field(default="gpt-4.1-mini", alias="OPENAI_MODEL")
     schema_file: Path = Field(default=ROOT_DIR / "schema_Adventureworks_DB.sql", alias="SCHEMA_FILE")
-    allowed_schemas: tuple[str, ...] = ("production", "sales")
+    # allowed_schemas: tuple[str, ...] = ("production", "sales")
     max_rows: int = Field(default=100, alias="MAX_ROWS")
     statement_timeout_ms: int = Field(default=5000, alias="STATEMENT_TIMEOUT_MS")
+    # How long (in seconds) to wait for a TCP connect to the DB before failing
+    connect_timeout_sec: int = Field(default=5, alias="CONNECT_TIMEOUT_SEC")
+    # How long (in seconds) to wait for a connection from the pool
+    pool_timeout_sec: int = Field(default=5, alias="POOL_TIMEOUT_SEC")
     blocked_tables: tuple[str, ...] = (
         "sales.creditcard",
         "sales.personcreditcard",

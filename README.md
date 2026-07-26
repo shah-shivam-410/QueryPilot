@@ -58,7 +58,6 @@ STATEMENT_TIMEOUT_MS=5000
 
 The application also loads these defaults from `pyproject.toml`:
 - `schema_file`: `schema_Adventureworks_DB.sql`
-- `allowed_schemas`: `production`, `sales`
 - `blocked_tables`: `sales.creditcard`, `sales.personcreditcard`
 - `blocked_columns`: `cardnumber`, `cardtype`, `expmonth`, `expyear`, `passwordhash`, `passwordsalt`
 

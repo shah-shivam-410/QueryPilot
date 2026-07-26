@@ -44,23 +44,34 @@ def open_ask_ui():
 @webapp.post("/ask", response_model=AskResponse)
 def ask(request: AskRequest) -> AskResponse:
     try:
-        result = agent_app.invoke({"requirement": request["requirement"]})
+        result = agent_app.invoke({"requirement": request["requirement"], "attempt": 0, "max_attempts": 3})
     except Exception as exc:
         logger.error(f"SQL creation failed: {exc}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"SQL builder failed: {exc}") from exc
 
+    final_sql = result.get("revised_sql") or result.get("sql")
+
+    # If validation failed, return a clear 400 with structured detail so UI can display it uniformly.
+    if not result.get("is_valid", True):
+        detail = {
+            "message": "SQL validation failed",
+            "errors": result.get("errors", []),
+            "explanation": result.get("explanation", ""),
+            "query": final_sql,
+        }
+        raise HTTPException(status_code=400, detail=detail)
+
     if request["execute"] is False:
         return AskResponse(
             requirement=request["requirement"],
-            query=result["sql"],
-            explanation=result["explanation"],
-            tables_used=result["tables_used"],
-            assumptions=result["assumptions"],
+            query=final_sql,
+            explanation=result.get("explanation"),
+            tables_used=result.get("tables_used", []),
+            assumptions=result.get("assumptions", []),
             result=None,
         )
     else:
         try:
-            final_sql = result["revised_sql"] if "revised_sql" in result and result["revised_sql"] else result["sql"]
             db_exec_result = execute_sql(final_sql)
         except Exception as exc:
             logger.error(f"SQL execution failed: {exc}", exc_info=True)
@@ -68,7 +79,7 @@ def ask(request: AskRequest) -> AskResponse:
 
     resp = AskResponse(
         requirement=request["requirement"],
-        query=result["sql"],
+        query=final_sql,
         explanation=result["explanation"],
         tables_used=result["tables_used"],
         assumptions=result["assumptions"],

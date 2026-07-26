@@ -229,8 +229,22 @@
         resultArea.show();
       }
 
+      // Show backend message / errors only when there is no explanation available.
+      if (!data.explanation && ((data.message && String(data.message).length) || (data.errors && data.errors.length))) {
+        let errHtml = '<h3 class="section-title">Error</h3>';
+        if (data.message) {
+          errHtml += '<p class="muted">' + $('<div>').text(String(data.message)).html().replace(/\n/g, '<br>') + '</p>';
+        }
+        if (data.errors && data.errors.length) {
+          errHtml += '<ul>' + data.errors.map(function (item) {
+            return '<li>' + $('<div>').text(String(item)).html() + '</li>';
+          }).join('') + '</ul>';
+        }
+        explanationSection.append(errHtml);
+      }
+
       if (data.explanation) {
-        explanationSection.html('<h3 class="section-title">Explanation</h3><p>' + $('<div>').text(data.explanation).html().replace(/\n/g, '<br>') + '</p>');
+        explanationSection.append('<h3 class="section-title">Explanation</h3><p>' + $('<div>').text(data.explanation).html().replace(/\n/g, '<br>') + '</p>');
       }
 
       if (data.assumptions && data.assumptions.length) {
@@ -240,7 +254,7 @@
         assumptionsSection.html('<h3 class="section-title">Assumptions</h3>' + assumptionsHtml);
       }
 
-      if (data.explanation || (data.assumptions && data.assumptions.length)) {
+      if (data.explanation || (data.assumptions && data.assumptions.length) || (data.message && String(data.message).length) || (data.errors && data.errors.length)) {
         notesArea.show();
       }
     }
@@ -293,12 +307,57 @@
           }),
           success: function (data) {
             $('#status').text('Done');
-            renderResponse(data);
+            // Coerce into AskResponse-shaped object so UI relies only on that model
+            const resp = data || {};
+            const askResp = {
+              requirement: resp.requirement || '',
+              query: resp.query || null,
+              explanation: resp.explanation || resp.message || null,
+              tables_used: resp.tables_used || [],
+              assumptions: resp.assumptions || resp.errors || [],
+              result: resp.result || null,
+              message: resp.message || null,
+              errors: resp.errors || null
+            };
+            renderResponse(askResp);
           },
           error: function (xhr) {
-            const msg = xhr.responseJSON?.detail || xhr.responseText || 'Request failed';
+            let resp = xhr.responseJSON;
+            if (!resp) {
+              try {
+                resp = JSON.parse(xhr.responseText || '{}');
+              } catch (e) {
+                resp = {};
+              }
+            }
+
+            const detail = resp.detail !== undefined ? resp.detail : null;
+            const detailExplanation = detail && typeof detail === 'object' && detail.explanation ? detail.explanation : null;
+            const explanation = resp.explanation || detailExplanation || resp.message || (detail && typeof detail === 'string' ? detail : null) || null;
+            const errors = resp.errors || (Array.isArray(detail) ? detail : null);
+
+            const mapped = {
+              requirement: resp.requirement || '',
+              query: resp.query || null,
+              explanation: explanation,
+              tables_used: resp.tables_used || [],
+              assumptions: resp.assumptions || resp.errors || [],
+              result: null,
+              message: resp.message || (detail && typeof detail === 'string' ? detail : null) || null,
+              errors: errors,
+            };
+
             $('#status').text('Error');
-            $('#response-area').html('<div class="card"><h3 class="section-title">Error</h3><p>' + $('<div>').text(msg).html() + '</p></div>').show();
+            $('#sql-area, #result-area').hide();
+            renderResponse(mapped);
+
+            // If the response is not AskResponse-shaped and no explanation text was extracted, show raw payload.
+            if (!mapped.explanation && !mapped.errors && resp) {
+              const rawDetail = detail !== null ? detail : resp;
+              const msg = (typeof rawDetail === 'string') ? rawDetail : JSON.stringify(rawDetail, null, 2);
+              $('#explanation-section').html('<h3 class="section-title">Error</h3><pre>' + $('<div>').text(msg).html() + '</pre>');
+              $('#notes-area').show();
+            }
           }
         });
       });

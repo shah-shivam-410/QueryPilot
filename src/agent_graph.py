@@ -32,14 +32,27 @@ graph.add_node("sql_validator", sql_validator)
 graph.add_node("sql_revisor", sql_revisor)
 
 def should_revise_sql(state: AgentState) -> str:
-    """ Determine if the SQL needs to be revised based on validation results. """
-    res = not state["is_valid"] and len(state["errors"]) > 0 and state["attempt"] < state["max_attempts"]
-    if res == True:
-        logger.info("SQL needs revision. Attempt %d of %d.", state["attempt"] + 1, state["max_attempts"])
-        return "revision_needed"
-    else:
-        logger.info("SQL is valid.")
+    """ Determine if the SQL needs to be revised based on validation results.
+
+    If a fatal validation error was detected (e.g., DML/DDL keywords), do not attempt
+    revision and end the graph so the API can surface the error to the caller/UI.
+    """
+    fatal = state.get("fatal_error", False)
+    attempt = state.get("attempt", 0)
+    max_attempts = state.get("max_attempts", 3)
+    errors = state.get("errors") or []
+    is_valid = state.get("is_valid", False)
+
+    if fatal:
+        logger.info("Fatal validation error detected; not attempting revision.")
         return "success"
+
+    res = not is_valid and len(errors) > 0 and attempt < max_attempts
+    if res:
+        logger.info("SQL needs revision. Attempt %d of %d.", attempt + 1, max_attempts)
+        return "revision_needed"
+    logger.info("SQL is valid.")
+    return "success"
 
 graph.add_edge(START, "sql_builder")
 graph.add_edge("sql_builder", "sql_validator")

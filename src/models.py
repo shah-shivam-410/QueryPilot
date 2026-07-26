@@ -4,20 +4,24 @@ import operator
 
 class AgentState(TypedDict):
     requirement: str
+    sql_created: bool
     sql: str
     explanation: str
     tables_used: list[str]
     assumptions: list[str] | None
     is_valid: bool
+    revised_sql_created: bool
     revised_sql: str | None = None
     errors: list[str] | None
     warnings: list[str] | None
     attempt: int = 0
     max_attempts: int = 3
+    fatal_error: bool = False
     # messages: Annotated[list[AnyMessage], operator.add]
     
 class SQLBuilderOutput(TypedDict):
     requirement: str
+    sql_created: bool
     sql: str
     explanation: str
     tables_used: list[str]
@@ -29,6 +33,7 @@ class SQLValidatorOutput(TypedDict):
     warnings: list[str] | None
 
 class SQLRevisorOutput(TypedDict):
+    revised_sql_created: bool
     revised_sql: str | None = None
     explanation: str
     tables_used: list[str]
@@ -50,3 +55,6 @@ class AskResponse(TypedDict):
     tables_used: list[str] = []
     assumptions: list[str] = []
     result: QueryResult | None = None
+    # When backend has validation/runtime errors, populate these fields.
+    message: str | None = None
+    errors: list[str] | None = None

@@ -7,6 +7,7 @@ from sqlglot import exp
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
+# from langchain_github_copilot import ChatGitHubCopilot
 from langchain_core.output_parsers import PydanticToolsParser, JsonOutputParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
@@ -35,6 +36,11 @@ llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-flash",
     temperature=0,
 )
+
+# llm = ChatGitHubCopilot(
+#     # model="gemini-2.5-flash",
+#     temperature=0,
+# )
 
 # llm = ChatOpenAI(
 #     model="gpt-4o-mini",

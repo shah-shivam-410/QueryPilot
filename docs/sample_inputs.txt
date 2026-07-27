@@ -23,4 +23,8 @@ Refer to schema markdown files in docs\schema_outputs\ (e.g., production.md, sal
 
 Find the top 3 product purchased base on count of orders and quanity. Only consider order if it was not cancelled.
 
+Find the lowest3 product purchased base on count of orders and quanity. Only consider order if it was not cancelled.
+Give name, id along with count.
+
+
 Find the top 10 suppliers with the highest average lead time (days between order_date and delivery_date) in the purchasing schema, excluding outliers beyond 3 standard deviations. Return supplier_id, supplier_name, avg_lead_time_days.

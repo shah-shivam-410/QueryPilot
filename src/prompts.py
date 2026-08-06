@@ -8,6 +8,8 @@ Always add limits in sql to have fixed rows in result if possible.
 Do not use blocked tables or sensitive columns.
 Do not generate INSERT, UPDATE, DELETE, DROP, ALTER, CREATE, TRUNCATE, COPY, CALL, or DO.
 Prefer simple, auditable SQL over clever SQL.
+Once SQL is generated, validate it using the sql_validator tool.
+Check is_valid flag of state and if it False, revise it again. and again fed to sql_validator until it is valid or the maximum number of attempts is reached.
 Return valid output with these keys: requirement, sql_created, sql, explanation, tables_used, assumptions.
 If sql was created successfully set sql_created to True, otherwise set it to False and provide an explanation of why the SQL could not be created.
 """

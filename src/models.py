@@ -1,6 +1,7 @@
 from langchain_core.messages import AnyMessage
 from typing_extensions import TypedDict, Annotated, Literal, Any, NotRequired
-import operator
+from langchain_core.messages import BaseMessage
+from langgraph.graph.message import add_messages
 
 class AgentState(TypedDict):
     requirement: str
@@ -17,7 +18,7 @@ class AgentState(TypedDict):
     attempt: int = 0
     max_attempts: int = 3
     fatal_error: bool = False
-    # messages: Annotated[list[AnyMessage], operator.add]
+    messages: Annotated[list[BaseMessage], add_messages]
     
 class SQLBuilderOutput(TypedDict):
     requirement: str

@@ -3,6 +3,7 @@ import sys
 
 from dotenv import load_dotenv
 from langgraph.graph import StateGraph, START, END
+from langgraph.prebuilt import ToolNode, tools_condition
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -25,11 +26,15 @@ logger = logging.getLogger(__name__)
 ROOT_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT_DIR / ".env")
 
+tools = [sql_validator]
+tool_node = ToolNode(tools)
+
+
 graph = StateGraph(AgentState)
 
 graph.add_node("sql_builder", sql_builder)
-graph.add_node("sql_validator", sql_validator)
-graph.add_node("sql_revisor", sql_revisor)
+graph.add_node("tools", tool_node)
+# graph.add_node("sql_revisor", sql_revisor)
 
 def should_revise_sql(state: AgentState) -> str:
     """ Determine if the SQL needs to be revised based on validation results.
@@ -55,16 +60,25 @@ def should_revise_sql(state: AgentState) -> str:
     return "success"
 
 graph.add_edge(START, "sql_builder")
-graph.add_edge("sql_builder", "sql_validator")
 graph.add_conditional_edges(
-    "sql_validator",
-    should_revise_sql,
+    "sql_builder",
+    tools_condition,
     {
-        "revision_needed": "sql_revisor",
-        "success": END
-    }
+        "tools": "tools",
+        "end": END,
+    },
 )
-graph.add_edge("sql_revisor", "sql_validator")
+graph.add_edge("tools", "sql_builder")
+
+# graph.add_edge("sql_builder", "sql_validator")
+# graph.add_conditional_edges(
+#     "sql_validator",
+#     should_revise_sql,
+#     {
+#         "revision_needed": "sql_revisor",
+#         "success": END
+#     }
+# )
 
 app = graph.compile()
 

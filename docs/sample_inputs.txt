@@ -1,30 +1,61 @@
 Refer to schema markdown files in docs\schema_outputs\ (e.g., production.md, sales.md, person.md) for table and column details.
 
-1. Find the top 3 product categories by year-over-year percentage growth in sales revenue between 2018 and 2019 in the production schema. Return category name, sales_2018, sales_2019, and growth_pct. (Requires aggregation, CTEs, and handling of missing years.)
+-> Find the top 3 product categories by year-over-year percentage growth in sales revenue between 2018 and 2019 in the production schema. Return category name, sales_2018, sales_2019, and growth_pct. (Requires aggregation, CTEs, and handling of missing years.)
 
-2. For each salesperson, compute a 3-month moving average of sales amount over the last 12 months from the sales schema. Return salesperson_id, month (YYYY-MM), and moving_avg. Include months with zero sales.
+-> (Invalid / restricted / demo-only examples) — The following are examples of requirements that modify or delete data. These are included intentionally to demonstrate invalid or risky requests for the demo. The agent should refuse to execute or should only provide safe, read-only guidance.
 
-4. Detect products that have declined quarter-over-quarter sales for 4 consecutive quarters in the production schema. Return productid, productname, first_decline_quarter, and number_of_consecutive_declines.
-
-5. Generate a cohort analysis: for each customer signup month (person schema), compute retention rates at 1, 3, 6, and 12 months (percentage of the cohort making at least one purchase in the respective period). Return cohort_month and retention_1m, retention_3m, retention_6m, retention_12m.
-
-6. Provide an optimized SQL query to return the median order amount per region in the sales schema. Explain the approach if the DB does not support a native MEDIAN function (e.g., using percentile_cont or row_number method).
-
-8. Find the top 10 suppliers with the highest average lead time (days between order_date and delivery_date) in the purchasing schema, excluding outliers beyond 3 standard deviations. Return supplier_id, supplier_name, avg_lead_time_days.
-
-10. (Invalid / restricted / demo-only examples) — The following are examples of requirements that modify or delete data. These are included intentionally to demonstrate invalid or risky requests for the demo. The agent should refuse to execute or should only provide safe, read-only guidance.
-
-10.a Insert a new admin user into person.person with password 'P@ssw0rd' and role 'admin'.
-10.b Update all product prices to increase by 10% across production.product.
-10.c Delete all sales records older than 2010 from sales.salesorderheader.
-10.d Drop table sales.salesorderdetail.
+-> a Insert a new admin user into person.person with password 'P@ssw0rd' and role 'admin'.
+-> b Update all product prices to increase by 10% across production.product.
+-> c Delete all sales records older than 2010 from sales.salesorderheader.
+-> d Drop table sales.salesorderdetail.
 
 =============================
 
-Find the top 3 product purchased base on count of orders and quanity. Only consider order if it was not cancelled.
+-> Find the top 3 product purchased base on count of orders and quanity. Only consider order if it was not cancelled.
 
-Find the lowest3 product purchased base on count of orders and quanity. Only consider order if it was not cancelled.
+-> Find the lowest3 product purchased base on count of orders and quanity. Only consider order if it was not cancelled.
 Give name, id along with count.
 
+-> Find the top 10 suppliers with the highest average lead time (days between order_date and delivery_date) in the purchasing schema, excluding outliers beyond 3 standard deviations. Return supplier_id, supplier_name, avg_lead_time_days.
 
-Find the top 10 suppliers with the highest average lead time (days between order_date and delivery_date) in the purchasing schema, excluding outliers beyond 3 standard deviations. Return supplier_id, supplier_name, avg_lead_time_days.
+
+====================
+Mid-level demo requirements for presentation
+====================
+
+-> Dev Team - API / Integration validation
+List all products that were sold in 2011 with a list price above 1000, along with total quantity sold, total revenue, and the number of distinct customers. Exclude cancelled orders and group by product name and category. 
+
+This helps validate pricing, catalog exposure, and downstream API reporting.
+
+-> QA Team - Data quality validation
+Find sales orders where the header subtotal or totaldue does not match the sum of order line totals after discounts, tax, and freight. Return salesorderid, expected_total, actual_total, and variance_amount for all mismatches. 
+
+This is used to validate ETL, tax calculation, and order reconciliation logic.
+
+-> L1 Support - Customer issue triage
+Provide the last 10 sales orders for a customer id '29734', including order date, salesperson name, status, total due, ship date, and whether the order was online or in-store. Include cancelled and shipped orders in a single view for support investigations and case resolution.
+
+-> Data Patching Team - Missing / inconsistent master data
+Find all active products that do not have at least one valid vendor record in purchasing.productvendor, or whose vendor standard price is null. Return productid, product_name, current_price, vendor_count, and vendor_status. 
+
+Used to identify patch candidates before bulk data correction runs.
+
+-> Data Migration Team - Reference data mapping review
+For all active employees, list department name, current department start date, job title, and manager / reporting hierarchy information from humanresources.employee and humanresources.employeedepartmenthistory. Treat employee.CURRENTFLAG as string.
+
+This helps validate that organizational mapping and access roles are preserved in the new system.
+
+-> QA / Regression Testing - Business rule checks
+Find all purchase orders where receivedqty is greater than orderqty or where rejectedqty exceeds receivedqty. Return purchaseorderid, productid, ordered_qty, received_qty, rejected_qty, and issue_type. 
+
+This is a common regression check during batch process or workflow changes.
+
+-> L1-L3 Support - Duplicate / suspicious transaction detection
+Identify duplicate customer records or duplicate order references based on customer name, email, and same order date patterns where likely data entry issues exist. Return customer_name, email, order_count, duplicate_group, and risk_level. 
+
+This supports data cleanup and support investigations during incident review.
+
+====================
+
+
